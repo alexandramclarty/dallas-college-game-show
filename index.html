@@ -266,12 +266,12 @@
       gap: 10px;
       overflow: hidden;
     }
-    /* No image: full-width centered */
+    /* No image: full-width, top+left aligned */
     .flip-back .face-body.no-image {
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
+      align-items: flex-start;
+      justify-content: flex-start;
+      text-align: left;
     }
     .back-question-repeat {
       font-size: clamp(0.95rem, 1.9vw, 1.15rem);
@@ -645,6 +645,56 @@
       .category-header { font-size: 0.55rem; padding: 8px 4px; min-height: 52px; }
       .card .card-value { font-size: 1rem; }
     }
+    /* ── Lightbox ── */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.92);
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+      padding: 24px;
+    }
+    .lightbox.active { display: flex; }
+    .lightbox img {
+      max-width: 92vw;
+      max-height: 92vh;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 0 60px rgba(0,0,0,0.8);
+      cursor: default;
+      animation: lightboxIn 0.2s ease-out;
+    }
+    @keyframes lightboxIn {
+      from { opacity: 0; transform: scale(0.94); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: #fff;
+      font-size: 1.6rem;
+      line-height: 1;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Montserrat', sans-serif;
+      transition: background 0.15s;
+    }
+    .lightbox-close:hover { background: rgba(255,255,255,0.28); }
+    /* Clickable image cursor hint */
+    .answer-image, .flip-front .face-body img, .wof-phrase img {
+      cursor: zoom-in;
+    }
   </style>
 </head>
 <body>
@@ -747,10 +797,10 @@
     ],
     "Know Your Campus Cryptids": [
       { q: "Cedar Valley campus is represented by one of the three bird-based Dallas College mascots, though the name sounds more like a nod to our region's dominant weather.", a: "The Suns", aImg: "assets/cv-suns.jpg" },
-      { q: "The El Centro campus mascot is the _____ — fitting, since it's perched in a historic downtown department store building on Main Street.", a: "Eagles", aImg: "assets/el-centro-eagles.webp" },
+      { q: "The El Centro campus mascot is this bird — fitting, since it's perched in a historic downtown department store building on Main Street.", a: "Eagles", aImg: "assets/el-centro-eagles.webp" },
       { q: "Eastfield campus's mascot changed from a harvester (the human kind) to this insect in 2017, though the original name stuck.", a: "Harvester Bee", aImg: "assets/eastfield-bees.jpg" },
-      { q: "The _____ represent the North Lake campus, which has a large bronze horse statue dedicated to its mascot.", a: "Blazers", aImg: "assets/north-lake-blazers.png" },
-      { q: "The _____ call Richland campus home — and yes, these birds actually swim on the lake that separates its buildings.", a: "Thunderducks", aImg: "assets/richland-thunderducks.jpg" },
+      { q: "This mascot represents the North Lake campus, which has a large bronze horse statue dedicated to it.", a: "Blazers", aImg: "assets/north-lake-blazers.png" },
+      { q: "This mascot calls Richland campus home — and yes, they actually swim on the lake that separates its buildings.", a: "Thunderducks", aImg: "assets/richland-thunderducks.jpg" },
     ],
     "Meet the Class": [
       { q: "Roughly 3 out of 4 Dallas College students are enrolled this way, meaning most of your students have a lot going on outside your classroom.", a: "Part-time" },
@@ -761,19 +811,19 @@
     ],
     "Not Just an Org Chart": [
       { q: "The functional areas of Dallas College are Academics, Student Success, Operations, and Advancement & Innovation. Which functional area are you — and CETL! — in?", a: "Academics", aImg: "assets/functional-areas.png" },
-      { q: "Dallas College faculty are organized broadly into ______, then further divided by discipline. Do you know which one you\'re in?", a: "Schools", aImg: "assets/academics-schools-disciplines.png" },
+      { q: "Dallas College faculty are organized broadly into these, then further divided by discipline. Do you know which one you\'re in?", a: "Schools", aImg: "assets/academics-schools-disciplines.png" },
       { q: "If you have questions about your assigned courses, who\'s the best person to talk to?", a: "Your department chair", aImg: "assets/your-chair.png" },
       { q: "You\'ve received an important email about Dallas College from our chancellor! What\'s his name?", a: "Dr. Justin Lonon", aImg: "assets/dr-lonon.webp" },
       { q: "You\'ll regularly receive updates about faculty processes and requirements from our provost. What\'s her name?", a: "Dr. Shawnda Floyd", aImg: "assets/dr-floyd.webp" },
     ],
     "Your Mission, Should You Choose to Accept It": [
-      { q: "The mission of Dallas College is to ensure ________ is vibrant, growing and economically viable for current and future generations.", a: "Dallas County" },
+      { q: "The mission of Dallas College is to ensure Dallas County is vibrant, growing and economically viable for who?", choices: ["All Texans", "Residents and employers", "Current and future generations", "Future generations"], a: "Current and future generations" },
       { q: "Dallas College recently became one of only a handful of community colleges in the country to offer this type of degree.", a: "A bachelor's degree" },
       { q: "One of Dallas College's strategic priorities is to \"create a seamless, supportive experience for students to succeed from enrollment through graduation and career placement,\" summarized in these two words.", a: "Student Success" },
       { q: "Wheel of Fortune time! Guess the Dallas College mission statement one letter at a time.",
         wof: true,
         wofPhrase: "Transform lives and communities through higher education" },
-      { q: "Can you name Dallas College's six core values? Here's a hint.", qImg: "assets/values-empty.png", aImg: "assets/values.png" },
+      { q: "Can you name Dallas College's six core values?", qImg: "assets/values-empty.png", aImg: "assets/values.png" },
     ],
   };
 
@@ -1095,29 +1145,47 @@
   }
 
   // Overlay click to close
-  document.getElementById('modal-overlay').addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
-  });
-  document.getElementById('wof-overlay').addEventListener('click', function(e) {
-    if (e.target === this) closeWof();
-  });
+  // Overlay clicks intentionally disabled — prevents accidental card dismissal during presentation
 
-  // Keyboard shortcuts
+  // Keyboard shortcuts — Escape intentionally disabled to prevent accidental dismissal
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      closeModal();
-      closeWof();
-      return;
-    }
     if ((e.key === ' ' || e.key === 'Enter') && currentCard && !isFlipped) {
       e.preventDefault();
       flipCard();
     }
   });
 
+  // ── Lightbox ─────────────────────────────────────────────────────────────────
+  function openLightbox(src) {
+    const lb = document.getElementById('lightbox');
+    document.getElementById('lightbox-img').src = src;
+    lb.classList.add('active');
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+  }
+
+  // Wire up lightbox on any img inside flip faces or wof card (delegated)
+  document.addEventListener('click', function(e) {
+    if (e.target.matches('.flip-face img, .wof-card img')) {
+      openLightbox(e.target.src);
+    }
+  });
+
+  // Escape closes lightbox only (not the card modals)
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeLightbox();
+  });
+
   // ── Init ──────────────────────────────────────────────────────────────────
   buildBoard();
   buildScoreboard();
 </script>
+<!-- ── Lightbox ── -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()" title="Close">✕</button>
+  <img id="lightbox-img" src="" alt="Enlarged image" onclick="event.stopPropagation()" />
+</div>
+
 </body>
 </html>
