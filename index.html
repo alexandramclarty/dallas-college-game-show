@@ -198,12 +198,12 @@
       transform: rotateY(180deg);
     }
     .face-tag {
-      font-size: 0.62rem;
+      font-size: 1rem;
       font-weight: 800;
-      letter-spacing: 0.2em;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      margin-bottom: 6px;
-      opacity: 0.75;
+      margin-bottom: 8px;
+      opacity: 0.85;
       flex-shrink: 0;
     }
     .flip-front .face-tag { color: var(--gold); }
@@ -218,7 +218,7 @@
       flex-shrink: 0;
     }
     .face-body {
-      font-size: clamp(0.95rem, 2.2vw, 1.2rem);
+      font-size: clamp(1.1rem, 2.6vw, 1.5rem);
       font-weight: 700;
       color: var(--white);
       line-height: 1.5;
@@ -250,7 +250,7 @@
       max-width: 48%;
       height: 100%;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
     }
     .answer-image {
       max-width: 100%;
@@ -286,16 +286,34 @@
       color: var(--white);
       line-height: 1.4;
     }
-    .flip-hint {
-      margin-top: 16px;
-      font-size: 0.68rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--gold);
-      opacity: 0.5;
-      text-align: center;
-      animation: hintPulse 2s ease-in-out infinite;
+    /* Multiple choice list on question face */
+    .mc-list {
+      list-style: none;
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .mc-item {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      font-size: clamp(1rem, 2.4vw, 1.35rem);
+      font-weight: 700;
+      color: var(--white);
+    }
+    .mc-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.8em;
+      height: 1.8em;
+      border-radius: 50%;
+      background: var(--gold);
+      color: var(--dc-blue-dark);
+      font-size: 0.75em;
+      font-weight: 900;
+      flex-shrink: 0;
     }
     @keyframes hintPulse {
       0%, 100% { opacity: 0.35; }
@@ -305,42 +323,44 @@
     /* ── Shared controls area ── */
     .modal-controls {
       width: 100%;
-      max-width: 700px;
+      max-width: 760px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
     .award-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
       align-items: center;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.4s ease 0.3s;
+      width: 100%;
     }
     .award-row.visible {
       opacity: 1;
       pointer-events: auto;
     }
     .award-label {
-      font-size: 0.65rem;
+      font-size: 0.8rem;
       font-weight: 800;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--off-white);
-      opacity: 0.6;
+      opacity: 0.7;
       width: 100%;
+      margin-bottom: 2px;
     }
     .btn {
       font-family: 'Montserrat', sans-serif;
       font-weight: 700;
-      font-size: 0.75rem;
+      font-size: 0.95rem;
       letter-spacing: 0.06em;
       text-transform: uppercase;
       border: none;
       border-radius: 6px;
-      padding: 10px 18px;
+      padding: 13px 20px;
       cursor: pointer;
       transition: transform 0.1s, filter 0.1s;
     }
@@ -350,7 +370,7 @@
       background: var(--gold);
       color: var(--dc-blue-dark);
       box-shadow: 0 4px 14px rgba(245,197,24,0.4);
-      width: 100%;
+      flex: 1;
     }
     .btn-close {
       background: rgba(255,255,255,0.12);
@@ -360,9 +380,9 @@
     .btn-team {
       display: flex;
       align-items: center;
-      gap: 6px;
-      padding: 8px 14px;
-      font-size: 0.72rem;
+      gap: 8px;
+      padding: 11px 16px;
+      font-size: 0.9rem;
       border-radius: 6px;
       font-weight: 700;
       letter-spacing: 0.05em;
@@ -371,15 +391,16 @@
       font-family: 'Montserrat', sans-serif;
       cursor: pointer;
       transition: transform 0.1s, filter 0.1s;
+      flex: 1;
     }
     .btn-team:hover  { transform: translateY(-2px); filter: brightness(1.15); }
     .btn-team:active { transform: scale(0.96); }
-    .btn-team img { width: 24px; height: 24px; object-fit: contain; }
+    .btn-team img { width: 30px; height: 30px; object-fit: contain; }
     .btn-team.champy      { background: var(--team-champy);     color: #fff; box-shadow: 0 3px 12px rgba(30,142,247,0.4); }
     .btn-team.sasquatch   { background: var(--team-sasquatch);  color: #fff; box-shadow: 0 3px 12px rgba(48,156,63,0.4); }
     .btn-team.thunderbird { background: var(--team-thunderbird);color: #fff; box-shadow: 0 3px 12px rgba(229,38,38,0.4); }
     .btn-team.jackalope   { background: var(--team-jackalope);  color: var(--dc-blue-dark); box-shadow: 0 3px 12px rgba(245,197,24,0.4); }
-    .bottom-row { display: flex; gap: 8px; }
+    .action-row { display: flex; gap: 12px; width: 100%; }
 
     /* ════════════════════════════════════════
        WHEEL OF FORTUNE MODAL
@@ -648,7 +669,7 @@
         <div class="face-tag" id="front-category">Category</div>
         <div class="face-points" id="front-points">$100</div>
         <div class="face-body" id="front-question">Question text here.</div>
-        <div class="flip-hint">Click "Reveal Answer" to flip ↓</div>
+
       </div>
       <div class="flip-face flip-back">
         <div class="face-tag">Answer</div>
@@ -657,16 +678,17 @@
     </div>
   </div>
   <div class="modal-controls">
-    <button class="btn btn-flip" id="btn-flip" onclick="flipCard()">Reveal Answer</button>
+    <div class="action-row">
+      <button class="btn btn-flip" id="btn-flip" onclick="flipCard()">Reveal Answer</button>
+      <button class="btn btn-close" id="btn-close-pre" onclick="closeModal()">Close (No Award)</button>
+    </div>
     <div class="award-row" id="award-row">
       <div class="award-label">Award Points To:</div>
       <button class="btn-team champy"      onclick="awardPoints('champy')"><img src="assets/Cryptid_Crest_Crest_Champy_Blue.png" alt="Champy" /> Champy</button>
       <button class="btn-team sasquatch"   onclick="awardPoints('sasquatch')"><img src="assets/Cryptid_Crest_Crest_Sasquatch_Green.png" alt="Sasquatch" /> Sasquatch</button>
       <button class="btn-team thunderbird" onclick="awardPoints('thunderbird')"><img src="assets/Cryptid_Crest_Crest_Thunderbird_Red.png" alt="Thunderbird" /> Thunderbird</button>
       <button class="btn-team jackalope"   onclick="awardPoints('jackalope')"><img src="assets/Cryptid_Crest_Crest_Jackalope_Yellow.png" alt="Jackalope" /> Jackalope</button>
-    </div>
-    <div class="bottom-row">
-      <button class="btn btn-close" onclick="closeModal()" style="flex:1">Close (No Award)</button>
+      <button class="btn btn-close" onclick="closeModal()">Close</button>
     </div>
   </div>
 </div>
@@ -718,10 +740,10 @@
   const questions = {
     "Don't Mess with DFW": [
       { q: "This beloved invention was created in Dallas in 1971, inspired by a 7-Eleven Slurpee machine.", a: "The frozen margarita machine", aImg: "assets/frozen-marg-machine.webp" },
-      { q: "How many U.S. states have a smaller population than the DFW metro area? (Multiple choice: 28 / 33 / 38 / 43)", a: "38", aImg: "assets/states-less-pop-than-dfw.webp" },
+      { q: "How many U.S. states have a smaller population than the DFW metro area?", choices: ["28", "33", "38", "43"], a: "38", aImg: "assets/states-less-pop-than-dfw.webp" },
       { q: "DFW Airport is so large it has its own zip code — and it's bigger than this entire island.", a: "Manhattan", aImg: "assets/dfw-larger-than-manhattan.jpg" },
-      { q: "DFW ranks this among the most diverse metro areas in the United States. (Multiple choice: 2nd / 5th / 7th / 10th)", a: "5th", aImg: "assets/most-diverse-metros.png" },
-      { q: "DFW is adding people at a rate of roughly this many per day. (Multiple choice: 125 / 350 / 700 / 1200)", a: "350 people per day" },
+      { q: "DFW ranks this among the most diverse metro areas in the United States.", choices: ["2nd", "5th", "7th", "10th"], a: "5th", aImg: "assets/most-diverse-metros.png" },
+      { q: "DFW is adding people at a rate of roughly this many per day.", choices: ["125", "350", "700", "1,200"], a: "350 people per day" },
     ],
     "Know Your Campus Cryptids": [
       { q: "Cedar Valley campus is represented by one of the three bird-based Dallas College mascots, though the name sounds more like a nod to our region's dominant weather.", a: "The Suns", aImg: "assets/cv-suns.jpg" },
@@ -846,9 +868,26 @@
       frontQ.appendChild(img);
     }
     if (q.q) {
-      const span = document.createElement('span');
-      span.textContent = q.q;
-      frontQ.appendChild(span);
+      // Detect multiple choice: options stored in q.choices array
+      if (q.choices) {
+        const qText = document.createElement('span');
+        qText.textContent = q.q;
+        frontQ.appendChild(qText);
+        const ol = document.createElement('ol');
+        ol.className = 'mc-list';
+        const labels = ['A', 'B', 'C', 'D'];
+        q.choices.forEach((choice, i) => {
+          const li = document.createElement('li');
+          li.className = 'mc-item';
+          li.innerHTML = `<span class="mc-label">${labels[i]}</span>${choice}`;
+          ol.appendChild(li);
+        });
+        frontQ.appendChild(ol);
+      } else {
+        const span = document.createElement('span');
+        span.textContent = q.q;
+        frontQ.appendChild(span);
+      }
     }
 
     // Build back face: image left col + (question repeat + answer) right col
@@ -900,6 +939,7 @@
     }
 
     document.getElementById('btn-flip').style.display = '';
+    document.getElementById('btn-close-pre').style.display = '';
     document.getElementById('award-row').classList.remove('visible');
     document.getElementById('modal-overlay').classList.add('active');
   }
@@ -909,6 +949,7 @@
     isFlipped = true;
     document.getElementById('flip-card').classList.add('flipped');
     document.getElementById('btn-flip').style.display = 'none';
+    document.getElementById('btn-close-pre').style.display = 'none';
     setTimeout(() => {
       document.getElementById('award-row').classList.add('visible');
     }, 500);
