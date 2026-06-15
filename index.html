@@ -68,6 +68,26 @@
       opacity: 0.7;
       margin-top: 3px;
     }
+    .btn-reset {
+      margin-top: 10px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.5);
+      border-radius: 6px;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .btn-reset:hover {
+      background: rgba(229,38,38,0.3);
+      border-color: var(--dc-red);
+      color: #fff;
+    }
 
     /* ── Board ── */
     .board-container {
@@ -703,6 +723,7 @@
   <header class="game-header">
     <h1>CETL's Dallas College Game Show</h1>
     <div class="subtitle">Center for Excellence in Teaching &amp; Learning</div>
+    <button class="btn-reset" onclick="resetGame()" title="Clear all scores and used cards">↺ Reset Game</button>
   </header>
   <div class="board-container">
     <div class="board" id="game-board"></div>
@@ -842,6 +863,40 @@
   let wofGuessed   = new Set(); // all guessed letters (hit or miss)
   const usedCards  = new Set();
   const pointValues = [100, 200, 300, 400, 500];
+
+  const STORAGE_KEY = 'cetl-jeopardy-state';
+
+  function saveState() {
+    const state = {
+      scores: teams.map(t => ({ id: t.id, score: t.score })),
+      usedCards: [...usedCards],
+    };
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const state = JSON.parse(raw);
+      // Restore scores
+      state.scores.forEach(({ id, score }) => {
+        const team = teams.find(t => t.id === id);
+        if (team) team.score = score;
+      });
+      // Restore used cards
+      state.usedCards.forEach(key => usedCards.add(key));
+    } catch(e) {}
+  }
+
+  function resetGame() {
+    if (!confirm('Reset all scores and clear the board? This cannot be undone.')) return;
+    try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+    teams.forEach(t => t.score = 0);
+    usedCards.clear();
+    buildBoard();
+    buildScoreboard();
+  }
 
   // ── Build Board ───────────────────────────────────────────────────────────
   function buildBoard() {
@@ -1119,6 +1174,7 @@
     void card.offsetWidth;
     card.classList.add('pulse');
     markCardUsed();
+    saveState();
     // Close whichever modal is open
     document.getElementById('modal-overlay').classList.remove('active');
     document.getElementById('wof-overlay').classList.remove('active');
@@ -1131,6 +1187,7 @@
     const team = teams.find(t => t.id === teamId);
     team.score = Math.max(0, team.score + delta);
     document.getElementById(`score-${teamId}`).textContent = team.score;
+    saveState();
   }
 
   // ── Shared: Mark Used ─────────────────────────────────────────────────────
@@ -1142,6 +1199,7 @@
         c.classList.add('used');
       }
     });
+    saveState();
   }
 
   // Overlay click to close
@@ -1178,6 +1236,7 @@
   });
 
   // ── Init ──────────────────────────────────────────────────────────────────
+  loadState();
   buildBoard();
   buildScoreboard();
 </script>
