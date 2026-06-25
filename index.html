@@ -475,17 +475,26 @@
       line-height: 1;
     }
 
-    /* The phrase display — tiles per word on separate rows */
+    /* The phrase display — inline flow of plain words and tile words */
     .wof-phrase {
       display: flex;
       flex-wrap: wrap;
-      gap: 14px 20px;
+      align-items: flex-end;
+      gap: 8px 5px;
       justify-content: center;
       margin-bottom: 24px;
     }
     .wof-word {
       display: flex;
-      gap: 5px;
+      gap: 4px;
+    }
+    /* Plain (pre-revealed) words sit inline with tiles */
+    .wof-plain-word {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1;
+      padding-bottom: 4px; /* align baseline with tile bottom */
     }
     .wof-tile {
       width: 36px;
@@ -718,6 +727,412 @@
     .answer-image, .flip-front .face-body img, .wof-phrase img {
       cursor: zoom-in;
     }
+
+    /* ════════════════════════════════════════
+       JACKALOPE JACKPOT MODAL
+    ════════════════════════════════════════ */
+    .jackpot-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      backdrop-filter: blur(4px);
+      flex-direction: column;
+      gap: 12px;
+    }
+    .jackpot-overlay.active { display: flex; }
+
+    .jackpot-card {
+      width: 100%;
+      max-width: 900px;
+      background: #fff;
+      border: 3px solid #000;
+      border-radius: 12px;
+      padding: 20px 24px;
+      box-shadow: 0 0 0 6px #fff, 0 0 0 9px #000, 0 24px 60px rgba(0,0,0,0.7);
+      color: #000;
+    }
+
+    .jackpot-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 14px;
+      border-bottom: 2px solid #000;
+      padding-bottom: 10px;
+    }
+    .jackpot-tag {
+      font-size: 0.7rem;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #000;
+    }
+    .jackpot-points {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #000;
+      line-height: 1;
+    }
+    .jackpot-guess-count {
+      margin-left: auto;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #555;
+    }
+    .jackpot-guess-count span {
+      color: #000;
+      font-size: 1.1rem;
+    }
+
+    /* Main content: jackalope left, phrase+alphabet right */
+    .jackpot-body {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    /* Jackalope canvas */
+    .jackpot-canvas {
+      flex: 0 0 220px;
+      width: 220px;
+      height: 280px;
+      position: relative;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      background: #fafafa;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .jackpot-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .jackpot-layer.visible { opacity: 1; }
+
+    /* Jackpot animation — jackalope bounces then all layers fade */
+    @keyframes jackpotBounce {
+      0%   { transform: translateX(0) rotate(0deg); }
+      15%  { transform: translateX(-8px) rotate(-3deg); }
+      30%  { transform: translateX(12px) rotate(3deg); }
+      45%  { transform: translateX(-10px) rotate(-2deg); }
+      60%  { transform: translateX(16px) rotate(2deg); }
+      75%  { transform: translateX(-6px) rotate(-1deg); }
+      90%  { transform: translateX(8px) rotate(1deg); }
+      100% { transform: translateX(200px) rotate(15deg); }
+    }
+    .jackpot-canvas.animating {
+      animation: jackpotBounce 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+
+    /* Right side: phrase + alphabet */
+    .jackpot-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    /* Phrase tiles — b&w style */
+    .jackpot-phrase {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 5px;
+      align-items: flex-end;
+    }
+    .jackpot-word {
+      display: flex;
+      gap: 3px;
+    }
+    .jackpot-tile {
+      width: 26px;
+      height: 34px;
+      border: 2px solid #000;
+      border-radius: 3px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 900;
+      color: transparent;
+      text-transform: uppercase;
+      font-family: 'Montserrat', sans-serif;
+      transition: color 0.2s, background 0.2s;
+    }
+    .jackpot-tile.revealed {
+      color: #000;
+      background: #f5f5f5;
+    }
+    .jackpot-tile.flash {
+      animation: jackpotTileFlash 0.35s ease-out;
+    }
+    @keyframes jackpotTileFlash {
+      0%   { background: #000; color: #fff; }
+      100% { background: #f5f5f5; color: #000; }
+    }
+    /* Stolen tiles — grey out when jackpot triggers */
+    .jackpot-tile.stolen {
+      background: #eee;
+      border-color: #bbb;
+      color: transparent !important;
+    }
+    /* Plain words in phrase */
+    .jackpot-plain-word {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #000;
+      padding-bottom: 3px;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    /* Alphabet */
+    .jackpot-alphabet {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .jackpot-letter {
+      width: 32px;
+      height: 32px;
+      border: 2px solid #000;
+      border-radius: 4px;
+      background: #fff;
+      color: #000;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
+      transition: background 0.1s, color 0.1s;
+    }
+    .jackpot-letter:hover:not(:disabled) {
+      background: #000;
+      color: #fff;
+    }
+    .jackpot-letter:disabled { cursor: default; }
+    .jackpot-letter.hit  { background: #000; color: #fff; border-color: #000; opacity: 1 !important; }
+    .jackpot-letter.miss { background: #ddd; color: #999; border-color: #bbb; opacity: 1 !important; }
+
+    /* Stolen state: alphabet locks */
+    .jackpot-letter.locked {
+      background: #eee;
+      color: #bbb;
+      border-color: #ccc;
+      cursor: default;
+    }
+
+    /* Actions */
+    .jackpot-question {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      font-weight: 700;
+      color: #000;
+      margin-bottom: 14px;
+    }
+    .jackpot-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .btn-jackpot-reveal {
+      background: #000;
+      color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 6px;
+      padding: 11px 20px;
+      cursor: pointer;
+      flex: 1;
+      transition: background 0.1s;
+    }
+    .btn-jackpot-reveal:hover { background: #333; }
+    .btn-jackpot-close {
+      background: #fff;
+      color: #000;
+      border: 2px solid #000;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border-radius: 6px;
+      padding: 11px 20px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .btn-jackpot-close:hover { background: #f0f0f0; }
+
+    /* Solve prompt that appears after jackpot triggers */
+    .jackpot-solve-prompt {
+      display: none;
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #000;
+      text-align: center;
+      padding: 8px;
+      border: 2px dashed #000;
+      border-radius: 6px;
+      animation: solvePromptIn 0.4s ease-out;
+    }
+    .jackpot-solve-prompt.visible { display: block; }
+    @keyframes solvePromptIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    /* Award row for jackpot — white background */
+    .jackpot-award-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      width: 100%;
+      max-width: 900px;
+    }
+    .jackpot-award-row.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .jackpot-award-row .award-label {
+      color: #fff;
+    }
+
+    /* ════════════════════════════════════════
+       DAILY DOUBLE ANIMATION
+    ════════════════════════════════════════ */
+    .dd-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: #001a52;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 0;
+      overflow: hidden;
+    }
+    .dd-overlay.active { display: flex; }
+
+    /* Starburst rays */
+    .dd-rays {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .dd-rays svg {
+      width: 200vmax;
+      height: 200vmax;
+      animation: ddRaysSpin 3s linear infinite;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .dd-overlay.active .dd-rays svg { opacity: 1; }
+    @keyframes ddRaysSpin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* Text container */
+    .dd-text {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dd-label {
+      font-size: clamp(1rem, 3vw, 1.4rem);
+      font-weight: 900;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    .dd-main {
+      font-size: clamp(3rem, 10vw, 8rem);
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--gold);
+      text-shadow:
+        0 0 40px rgba(245,197,24,0.8),
+        0 0 80px rgba(245,197,24,0.4),
+        4px 4px 0 rgba(0,0,0,0.5);
+      line-height: 1;
+      opacity: 0;
+      transform: scale(0.4);
+    }
+
+    .dd-sub {
+      font-size: clamp(0.8rem, 2vw, 1.1rem);
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    /* Animate in */
+    .dd-overlay.active .dd-label {
+      animation: ddFadeUp 0.4s ease-out 0.3s forwards;
+    }
+    .dd-overlay.active .dd-main {
+      animation: ddSlam 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) 0.5s forwards;
+    }
+    .dd-overlay.active .dd-sub {
+      animation: ddFadeUp 0.4s ease-out 0.9s forwards;
+    }
+
+    @keyframes ddSlam {
+      from { opacity: 0; transform: scale(0.4); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes ddFadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Fade out whole overlay */
+    .dd-overlay.fade-out {
+      animation: ddOverlayOut 0.5s ease-in forwards;
+    }
+    @keyframes ddOverlayOut {
+      from { opacity: 1; }
+      to   { opacity: 0; }
+    }
   </style>
 </head>
 <body>
@@ -774,7 +1189,7 @@
       <div class="wof-tag" id="wof-category">Category</div>
       <div class="wof-points" id="wof-points">$400</div>
     </div>
-    <!-- Phrase tiles rendered here -->
+    <!-- Phrase tiles rendered here (mix of plain words and tile words) -->
     <div class="wof-phrase" id="wof-phrase"></div>
     <!-- A–Z buttons -->
     <div class="wof-alphabet" id="wof-alphabet"></div>
@@ -814,40 +1229,44 @@
   const questions = {
     "Don't Mess with DFW": [
       { q: "This beloved invention was created in Dallas in 1971, inspired by a 7-Eleven Slurpee machine.", a: "The frozen margarita machine", aImg: "assets/frozen-marg-machine.webp" },
-      { q: "How many U.S. states have a smaller population than the DFW metro area?", choices: ["28", "33", "38", "43"], a: "38", aImg: "assets/states-less-pop-than-dfw.webp" },
+      { q: "How many U.S. states have a smaller population than the DFW metro area?", choices: ["3", "17", "38", "45"], a: "38", aImg: "assets/states-less-pop-than-dfw.webp" },
       { q: "DFW Airport is so large it has its own zip code — and it's bigger than this entire island.", a: "Manhattan", aImg: "assets/dfw-larger-than-manhattan.jpg" },
-      { q: "DFW ranks this among the most diverse metro areas in the United States.", choices: ["2nd", "5th", "7th", "10th"], a: "5th", aImg: "assets/most-diverse-metros.png" },
-      { q: "DFW is adding people at a rate of roughly this many per day.", choices: ["125", "350", "700", "1,200"], a: "350 people per day" },
+      { q: "DFW ranks this among the most diverse metro areas in the United States.", choices: ["1st", "2nd", "5th", "11th"], a: "5th", aImg: "assets/most-diverse-metros.png" },
+      { q: "DFW is growing at a rate of roughly this many people per day.", choices: ["20", "175", "350", "700"], a: "350" },
     ],
     "Know Your Campus Cryptids": [
-      { q: "Cedar Valley campus is represented by one of the three bird-based Dallas College mascots, though the name sounds more like a nod to our region's dominant weather.", a: "The Suns", aImg: "assets/cv-suns.jpg" },
-      { q: "The El Centro campus mascot is this bird — fitting, since it's perched in a historic downtown department store building on Main Street.", a: "Eagles", aImg: "assets/el-centro-eagles.webp" },
-      { q: "Eastfield campus's mascot changed from a harvester (the human kind) to this insect in 2017, though the original name stuck.", a: "Harvester Bee", aImg: "assets/eastfield-bees.jpg" },
+      { q: "Cedar Valley campus is represented by a bird-based mascot, though this team name sounds more like a nod to our region's dominant weather.", a: "The Suns", aImg: "assets/cv-suns.jpg" },
+      { q: "The El Centro campus mascot is this bird — fitting, since they're often spotted at White Rock Lake.", a: "Eagles", aImg: "assets/el-centro-eagles.webp" },
+      { q: "Eastfield campus's mascot changed from a harvester (the human kind) to this insect in 2017.", a: "Harvester Bee", aImg: "assets/eastfield-bees.jpg" },
       { q: "This mascot represents the North Lake campus, which has a large bronze horse statue dedicated to it.", a: "Blazers", aImg: "assets/north-lake-blazers.png" },
-      { q: "This mascot calls Richland campus home — and yes, they actually swim on the lake that separates its buildings.", a: "Thunderducks", aImg: "assets/richland-thunderducks.jpg" },
+      { q: "This mascot calls Richland campus home — and yes, these birds actually swim on the campus's lake.", a: "Thunderducks", aImg: "assets/richland-thunderducks.jpg" },
     ],
     "Meet the Class": [
-      { q: "Roughly 3 out of 4 Dallas College students are enrolled this way, meaning most of your students have a lot going on outside your classroom.", a: "Part-time" },
+      { q: "Roughly 3 out of 4 Dallas College students are enrolled this way, meaning most of your students have a lot going on outside your classroom.", choices: ["Part-time", "Dual Credit", "Continuing Education", "Early College High School"], a: "Part-time" },
       { q: "27% of Dallas College students are under the age of 18. What program brings many of them here?", a: "Dual Credit" },
-      { q: "If you picture a \"typical college student\" as someone living on campus and going to school full-time, this is roughly the percent of your Dallas College students that actually describes.", a: "0%" },
+      { q: "If you picture a \"typical college student\" as someone living on campus and going to school full-time, this is roughly the percent of your Dallas College students that actually describes.", choices: ["0%", "25%", "50%", "75%"], a: "0%" },
       { q: "More than half of Dallas College students identify with this ethnic group.", a: "Hispanic" },
-      { q: "Roughly this percentage of our students are food insecure, making campus resources like the food pantry especially valuable.", a: "50%" },
+      { q: "Roughly this percentage of our students are food insecure, making campus resources like the food pantry especially valuable.", choices: ["5%", "15%", "25%", "50%"], a: "50%" },
     ],
     "Not Just an Org Chart": [
-      { q: "The functional areas of Dallas College are Academics, Student Success, Operations, and Advancement & Innovation. Which functional area are you — and CETL! — in?", a: "Academics", aImg: "assets/functional-areas.png" },
-      { q: "Dallas College faculty are organized broadly into these, then further divided by discipline. Do you know which one you\'re in?", a: "Schools", aImg: "assets/academics-schools-disciplines.png" },
-      { q: "If you have questions about your assigned courses, who\'s the best person to talk to?", a: "Your department chair", aImg: "assets/your-chair.png" },
+      { q: "The functional areas of Dallas College are Academics, Student Success, Operations, and Advancement & Innovation. Which functional area are you in? Hint: CETL is in this functional area too!", a: "Academics", aImg: "assets/functional-areas.png" },
+      { q: "Dallas College faculty are organized broadly into these groups, then further divided by discipline.", a: "Schools", aImg: "assets/academics-schools-disciplines.png" },
+      { q: "If you have questions about your assigned courses, who's the best person to talk to?", choices: ["Academic Scheduling", "Your department chair", "CETL", "E-Learning"], a: "Your department chair", aImg: "assets/your-chair.png" },
       { q: "You\'ve received an important email about Dallas College from our chancellor! What\'s his name?", a: "Dr. Justin Lonon", aImg: "assets/dr-lonon.webp" },
       { q: "You\'ll regularly receive updates about faculty processes and requirements from our provost. What\'s her name?", a: "Dr. Shawnda Floyd", aImg: "assets/dr-floyd.webp" },
     ],
     "Your Mission, Should You Choose to Accept It": [
-      { q: "The mission of Dallas College is to ensure Dallas County is vibrant, growing and economically viable for who?", choices: ["All Texans", "Residents and employers", "Current and future generations", "Future generations"], a: "Current and future generations" },
-      { q: "Dallas College recently became one of only a handful of community colleges in the country to offer this type of degree.", a: "A bachelor's degree" },
-      { q: "One of Dallas College's strategic priorities is to \"create a seamless, supportive experience for students to succeed from enrollment through graduation and career placement,\" summarized in these two words.", a: "Student Success" },
-      { q: "Wheel of Fortune time! Guess the Dallas College mission statement one letter at a time.",
+      { q: "The purpose of Dallas College is to ensure Dallas County is ___, _______ and ________ for current and future generations.",
         wof: true,
-        wofPhrase: "Transform lives and communities through higher education" },
-      { q: "Can you name Dallas College's six core values?", qImg: "assets/values-empty.png", aImg: "assets/values.png" },
+        wofContext: "The purpose of Dallas College is to ensure Dallas County is ___ , ___ and ___ for current and future generations.",
+        wofPhrase: "vibrant growing economically viable",
+        a: "vibrant, growing, economically viable" },
+      { q: "Dallas College recently became one of only a handful of community colleges in the country to offer this type of degree.", a: "A bachelor's degree" },
+      { q: "One of Dallas College's strategic priorities is to \"create a seamless, supportive experience for students to succeed from enrollment through graduation and career placement,\" summarized in these two alliterative words.", a: "Student Success" },
+      { q: "Jackalope Jackpot! Guess letters to reveal the Dallas College mission statement. Reveal the full Jackalope and he steals your remaining guesses!",
+        jackpot: true,
+        jackpotPhrase: "Transform lives and communities through higher education" },
+      { q: "What are Dallas College's values?", aImg: "assets/values.png", dailyDouble: true },
     ],
   };
 
@@ -953,7 +1372,11 @@
     const q = questions[cat][rowIdx];
     currentCard = { cat, rowIdx, key, points: pointValues[rowIdx] };
 
-    if (q.wof) {
+    if (q.dailyDouble) {
+      triggerDailyDouble(() => openFlip(q, cat, rowIdx));
+    } else if (q.jackpot) {
+      openJackpot(q, cat, rowIdx);
+    } else if (q.wof) {
       openWof(q, cat, rowIdx);
     } else {
       openFlip(q, cat, rowIdx);
@@ -1079,24 +1502,30 @@
     document.getElementById('wof-points').textContent   = `$${pointValues[rowIdx]}`;
     document.getElementById('wof-award-row').classList.remove('visible');
 
-    buildWofPhrase(q.wofPhrase);
+    buildWofPhrase(q.wofPhrase, q.wofContext || null);
     buildWofAlphabet(q.wofPhrase);
 
     document.getElementById('wof-overlay').classList.add('active');
   }
 
-  function buildWofPhrase(phrase) {
+  // buildWofPhrase(phrase, context)
+  // phrase: the guessable words only (e.g. "vibrant growing economically viable")
+  // context: optional full sentence with ___ marking where tiles go
+  //   e.g. "Dallas County is ___ , ___ and ___ for current and future generations."
+  //   Each ___ is replaced in order by the words from phrase.
+  // If no context, renders phrase tiles only (original behaviour).
+  function buildWofPhrase(phrase, context) {
     const container = document.getElementById('wof-phrase');
     container.innerHTML = '';
-    // Split into words; spaces between words are implicit gaps
-    phrase.split(' ').forEach(word => {
+
+    // Helper: render a single word as tiles
+    function makeTileWord(word) {
       const wordEl = document.createElement('div');
       wordEl.className = 'wof-word';
       [...word].forEach(char => {
         const tile = document.createElement('div');
         tile.className = 'wof-tile';
         tile.dataset.char = char.toLowerCase();
-        // Non-alpha chars (apostrophes etc) reveal immediately
         if (!/[a-zA-Z]/.test(char)) {
           tile.textContent = char;
           tile.classList.add('revealed');
@@ -1105,7 +1534,42 @@
         }
         wordEl.appendChild(tile);
       });
-      container.appendChild(wordEl);
+      return wordEl;
+    }
+
+    // Helper: render a plain text token (word or punctuation)
+    function makePlainWord(text) {
+      const span = document.createElement('span');
+      span.className = 'wof-plain-word';
+      span.textContent = text;
+      return span;
+    }
+
+    if (!context) {
+      // No context — render phrase tiles only (original behaviour)
+      phrase.split(' ').forEach(word => container.appendChild(makeTileWord(word)));
+      return;
+    }
+
+    // With context: walk through the context string token by token.
+    // Split on spaces but preserve punctuation attached to words.
+    // Each ___ gets replaced (in order) by the next guessable word's tiles.
+    const guessWords = phrase.split(' ');
+    let guessIdx = 0;
+
+    // Tokenise: split on whitespace, keep tokens
+    const tokens = context.split(/(\s+)/);
+    tokens.forEach(token => {
+      if (!token || /^\s+$/.test(token)) return; // skip whitespace tokens
+      if (token === '___') {
+        // Replace with tile word
+        if (guessIdx < guessWords.length) {
+          container.appendChild(makeTileWord(guessWords[guessIdx++]));
+        }
+      } else {
+        // Plain text token — could have trailing punctuation like "is," or "and"
+        container.appendChild(makePlainWord(token));
+      }
     });
   }
 
@@ -1181,6 +1645,7 @@
     // Close whichever modal is open
     document.getElementById('modal-overlay').classList.remove('active');
     document.getElementById('wof-overlay').classList.remove('active');
+    document.getElementById('jackpot-overlay').classList.remove('active');
     currentCard = null;
     isFlipped   = false;
   }
@@ -1238,11 +1703,273 @@
     if (e.key === 'Escape') closeLightbox();
   });
 
+
+
+  // ── Daily Double ──────────────────────────────────────────────────────────
+  function triggerDailyDouble(callback) {
+    const overlay = document.getElementById('dd-overlay');
+    overlay.classList.remove('fade-out');
+    overlay.classList.add('active');
+
+    // After 2.8s, fade out and fire the callback
+    setTimeout(() => {
+      overlay.classList.add('fade-out');
+      overlay.addEventListener('animationend', () => {
+        overlay.classList.remove('active', 'fade-out');
+        callback();
+      }, { once: true });
+    }, 2800);
+  }
+
+  // ── Jackalope Jackpot ─────────────────────────────────────────────────────
+  let jpGuessCount  = 0;
+  let jpGuessed     = new Set();
+  let jpStolen      = false;
+  const JP_MAX      = 9;
+  const JP_LAYERS   = ['jl-1','jl-2','jl-3','jl-4','jl-5','jl-6','jl-7','jl-8','jl-9'];
+
+  function openJackpot(q, cat, rowIdx) {
+    jpGuessCount = 0;
+    jpGuessed    = new Set();
+    jpStolen     = false;
+
+    document.getElementById('jackpot-category').textContent = cat;
+    document.getElementById('jackpot-points').textContent   = `$${pointValues[rowIdx]}`;
+    document.getElementById('jackpot-guess-count').textContent = '0';
+    document.getElementById('jackpot-award-row').classList.remove('visible');
+    document.getElementById('jackpot-solve-prompt').classList.remove('visible');
+
+    // Reset all layers
+    JP_LAYERS.forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.remove('visible');
+    });
+    // Reset canvas animation
+    const canvas = document.getElementById('jackpot-canvas');
+    canvas.classList.remove('animating');
+    canvas.style.opacity = '';
+
+    buildJackpotPhrase(q.jackpotPhrase);
+    buildJackpotAlphabet(q.jackpotPhrase);
+
+    document.getElementById('jackpot-overlay').classList.add('active');
+  }
+
+  function buildJackpotPhrase(phrase) {
+    const container = document.getElementById('jackpot-phrase');
+    container.innerHTML = '';
+    phrase.split(' ').forEach(word => {
+      const wordEl = document.createElement('div');
+      wordEl.className = 'jackpot-word';
+      [...word].forEach(char => {
+        const tile = document.createElement('div');
+        tile.className = 'jackpot-tile';
+        tile.dataset.char = char.toLowerCase();
+        tile.textContent = char;
+        if (!/[a-zA-Z]/.test(char)) tile.classList.add('revealed');
+        wordEl.appendChild(tile);
+      });
+      container.appendChild(wordEl);
+    });
+  }
+
+  function buildJackpotAlphabet(phrase) {
+    const container = document.getElementById('jackpot-alphabet');
+    container.innerHTML = '';
+    'abcdefghijklmnopqrstuvwxyz'.split('').forEach(letter => {
+      const btn = document.createElement('button');
+      btn.className = 'jackpot-letter';
+      btn.textContent = letter.toUpperCase();
+      btn.dataset.letter = letter;
+      btn.addEventListener('click', () => jackpotGuessLetter(letter, phrase));
+      container.appendChild(btn);
+    });
+  }
+
+  function jackpotGuessLetter(letter, phrase) {
+    if (jpGuessed.has(letter) || jpStolen) return;
+    jpGuessed.add(letter);
+
+    const btn = document.querySelector(`.jackpot-letter[data-letter="${letter}"]`);
+    btn.disabled = true;
+
+    const phraseLC = phrase.toLowerCase();
+    if (phraseLC.includes(letter)) {
+      btn.classList.add('hit');
+      // Reveal matching tiles
+      document.querySelectorAll(`.jackpot-tile[data-char="${letter}"]`).forEach(tile => {
+        tile.classList.add('revealed', 'flash');
+        tile.addEventListener('animationend', () => tile.classList.remove('flash'), { once: true });
+      });
+    } else {
+      btn.classList.add('miss');
+    }
+
+    // Increment guess count and reveal next layer
+    jpGuessCount++;
+    document.getElementById('jackpot-guess-count').textContent = jpGuessCount;
+    if (jpGuessCount <= JP_MAX) {
+      const layer = document.getElementById(JP_LAYERS[jpGuessCount - 1]);
+      if (layer) layer.classList.add('visible');
+    }
+
+    // Jackpot triggered at 9 guesses!
+    if (jpGuessCount === JP_MAX) {
+      triggerJackpot(phrase);
+    }
+  }
+
+  function triggerJackpot(phrase) {
+    jpStolen = true;
+
+    // Lock all remaining alphabet buttons
+    document.querySelectorAll('.jackpot-letter:not(:disabled)').forEach(btn => {
+      btn.disabled = true;
+      btn.classList.add('locked');
+    });
+
+    // Animate jackalope bouncing off screen after a short delay
+    setTimeout(() => {
+      const canvas = document.getElementById('jackpot-canvas');
+      canvas.classList.add('animating');
+
+      // After animation: hide canvas, steal unrevealed tiles, show solve prompt
+      canvas.addEventListener('animationend', () => {
+        canvas.style.opacity = '0';
+
+        // "Steal" unrevealed tiles
+        document.querySelectorAll('.jackpot-tile:not(.revealed)').forEach(tile => {
+          tile.classList.add('stolen');
+        });
+
+        // Show solve prompt
+        document.getElementById('jackpot-solve-prompt').classList.add('visible');
+      }, { once: true });
+    }, 600);
+  }
+
+  function jackpotRevealAll() {
+    // Reveal all tiles
+    document.querySelectorAll('.jackpot-tile').forEach(tile => {
+      tile.classList.remove('stolen');
+      tile.classList.add('revealed');
+    });
+    // Lock alphabet
+    document.querySelectorAll('.jackpot-letter:not(:disabled)').forEach(btn => {
+      btn.disabled = true;
+    });
+    // Show canvas if it was hidden
+    document.getElementById('jackpot-canvas').style.opacity = '1';
+    JP_LAYERS.forEach(id => document.getElementById(id).classList.add('visible'));
+
+    document.getElementById('jackpot-award-row').classList.add('visible');
+  }
+
+  function closeJackpot() {
+    if (currentCard) markCardUsed();
+    document.getElementById('jackpot-overlay').classList.remove('active');
+    currentCard = null;
+  }
+
   // ── Init ──────────────────────────────────────────────────────────────────
   loadState();
   buildBoard();
   buildScoreboard();
 </script>
+
+<!-- ── Jackalope Jackpot Modal ── -->
+<div class="jackpot-overlay" id="jackpot-overlay">
+  <div class="jackpot-card">
+    <div class="jackpot-header">
+      <div class="jackpot-tag" id="jackpot-category">Category</div>
+      <div class="jackpot-points" id="jackpot-points">$400</div>
+      <div class="jackpot-guess-count">Guesses: <span id="jackpot-guess-count">0</span> / 9</div>
+    </div>
+    <div class="jackpot-question">What is Dallas College's mission?</div>
+    <div class="jackpot-body">
+      <!-- Left: Jackalope canvas -->
+      <div class="jackpot-canvas" id="jackpot-canvas">
+        <img class="jackpot-layer" id="jl-1" src="assets/1-tail.png"        alt="tail" />
+        <img class="jackpot-layer" id="jl-2" src="assets/2-feet.png"        alt="feet" />
+        <img class="jackpot-layer" id="jl-3" src="assets/3-haunches.png"    alt="haunches" />
+        <img class="jackpot-layer" id="jl-4" src="assets/4-front-arm.png"   alt="front arm" />
+        <img class="jackpot-layer" id="jl-5" src="assets/5-behind-arm.png"  alt="behind arm" />
+        <img class="jackpot-layer" id="jl-6" src="assets/6-head.png"        alt="head" />
+        <img class="jackpot-layer" id="jl-7" src="assets/7-ear.png"         alt="ear" />
+        <img class="jackpot-layer" id="jl-8" src="assets/8-right-antler.png" alt="right antler" />
+        <img class="jackpot-layer" id="jl-9" src="assets/9-left-antler.png"  alt="left antler" />
+      </div>
+      <!-- Right: phrase + alphabet + actions -->
+      <div class="jackpot-right">
+        <div class="jackpot-phrase" id="jackpot-phrase"></div>
+        <div class="jackpot-solve-prompt" id="jackpot-solve-prompt">
+          The Jackalope stole your letters! Time to solve!
+        </div>
+        <div class="jackpot-alphabet" id="jackpot-alphabet"></div>
+        <div class="jackpot-actions">
+          <button class="btn-jackpot-reveal" onclick="jackpotRevealAll()">Reveal Answer</button>
+          <button class="btn-jackpot-close"  onclick="closeJackpot()">Close (No Award)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Award row -->
+  <div class="jackpot-award-row" id="jackpot-award-row">
+    <div class="award-label">Award Points To:</div>
+    <button class="btn-team champy"      onclick="awardPoints('champy')"><img src="assets/Cryptid_Crest_Crest_Champy_Blue.png" alt="Champy" /> Champy</button>
+    <button class="btn-team sasquatch"   onclick="awardPoints('sasquatch')"><img src="assets/Cryptid_Crest_Crest_Sasquatch_Green.png" alt="Sasquatch" /> Sasquatch</button>
+    <button class="btn-team thunderbird" onclick="awardPoints('thunderbird')"><img src="assets/Cryptid_Crest_Crest_Thunderbird_Red.png" alt="Thunderbird" /> Thunderbird</button>
+    <button class="btn-team jackalope"   onclick="awardPoints('jackalope')"><img src="assets/Cryptid_Crest_Crest_Jackalope_Yellow.png" alt="Jackalope" /> Jackalope</button>
+  </div>
+</div>
+
+
+<!-- ── Daily Double Overlay ── -->
+<div class="dd-overlay" id="dd-overlay">
+  <div class="dd-rays">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="rayGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%"   stop-color="rgba(245,197,24,0.35)" />
+          <stop offset="100%" stop-color="rgba(245,197,24,0)" />
+        </radialGradient>
+      </defs>
+      <!-- 24 rays -->
+      <g fill="url(#rayGrad)">
+        <polygon points="50,50 48,0 52,0" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(15 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(30 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(45 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(60 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(75 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(90 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(105 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(120 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(135 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(150 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(165 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(180 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(195 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(210 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(225 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(240 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(255 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(270 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(285 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(300 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(315 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(330 50 50)" />
+        <polygon points="50,50 48,0 52,0" transform="rotate(345 50 50)" />
+      </g>
+    </svg>
+  </div>
+  <div class="dd-text">
+    <div class="dd-label">$500 &bull; Your Mission, Should You Choose to Accept It</div>
+    <div class="dd-main">Daily<br>Double!</div>
+    <div class="dd-sub">Get ready&hellip;</div>
+  </div>
+</div>
+
 <!-- ── Lightbox ── -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
   <button class="lightbox-close" onclick="closeLightbox()" title="Close">✕</button>
