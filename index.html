@@ -849,7 +849,7 @@
     .jackpot-phrase {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px 5px;
+      gap: 8px 10px;
       align-items: flex-end;
     }
     .jackpot-word {
@@ -1238,7 +1238,7 @@
       { q: "Cedar Valley campus is represented by a bird-based mascot, though this team name sounds more like a nod to our region's dominant weather.", a: "The Suns", aImg: "assets/cv-suns.jpg" },
       { q: "The El Centro campus mascot is this bird — fitting, since they're often spotted at White Rock Lake.", a: "Eagles", aImg: "assets/el-centro-eagles.webp" },
       { q: "Eastfield campus's mascot changed from a harvester (the human kind) to this insect in 2017.", a: "Harvester Bee", aImg: "assets/eastfield-bees.jpg" },
-      { q: "This mascot represents the North Lake campus, which has a large bronze horse statue dedicated to it.", a: "Blazers", aImg: "assets/north-lake-blazers.png" },
+      { q: "This team represents the North Lake campus, which has a large bronze horse statue dedicated to it.", a: "Blazers", aImg: "assets/north-lake-blazers.png" },
       { q: "This mascot calls Richland campus home — and yes, these birds actually swim on the campus's lake.", a: "Thunderducks", aImg: "assets/richland-thunderducks.jpg" },
     ],
     "Meet the Class": [
@@ -1256,17 +1256,18 @@
       { q: "You\'ll regularly receive updates about faculty processes and requirements from our provost. What\'s her name?", a: "Dr. Shawnda Floyd", aImg: "assets/dr-floyd.webp" },
     ],
     "Your Mission, Should You Choose to Accept It": [
-      { q: "The purpose of Dallas College is to ensure Dallas County is ___, _______ and ________ for current and future generations.",
+      { q: "The purpose of Dallas College is to ensure Dallas County is ___, _______ and ________ ________ for current and future generations.",
         wof: true,
-        wofContext: "The purpose of Dallas College is to ensure Dallas County is ___ , ___ and ___ for current and future generations.",
+        wofContext: "The purpose of Dallas College is to ensure Dallas County is ___ , ___ and ___ ___ for current and future generations.",
         wofPhrase: "vibrant growing economically viable",
         a: "vibrant, growing, economically viable" },
       { q: "Dallas College recently became one of only a handful of community colleges in the country to offer this type of degree.", a: "A bachelor's degree" },
       { q: "One of Dallas College's strategic priorities is to \"create a seamless, supportive experience for students to succeed from enrollment through graduation and career placement,\" summarized in these two alliterative words.", a: "Student Success" },
       { q: "Jackalope Jackpot! Guess letters to reveal the Dallas College mission statement. Reveal the full Jackalope and he steals your remaining guesses!",
         jackpot: true,
-        jackpotPhrase: "Transform lives and communities through higher education" },
-      { q: "What are Dallas College's values?", aImg: "assets/values.png", dailyDouble: true },
+        jackpotPhrase: "Transform lives and communities through higher education",
+        dailyDouble: true },
+      { q: "What are Dallas College's values?", aImg: "assets/values.png" },
     ],
   };
 
@@ -1366,20 +1367,26 @@
     });
   }
 
-  // ── Open Card — routes to WoF or standard flip ────────────────────────────
+  // ── Open Card — routes to WoF, Jackpot, or standard flip (optionally via Daily Double) ──
   function openCard(cat, rowIdx, key) {
     if (usedCards.has(key)) return;
     const q = questions[cat][rowIdx];
     currentCard = { cat, rowIdx, key, points: pointValues[rowIdx] };
 
-    if (q.dailyDouble) {
-      triggerDailyDouble(() => openFlip(q, cat, rowIdx));
-    } else if (q.jackpot) {
-      openJackpot(q, cat, rowIdx);
+    // Figure out which opener applies to this question
+    let opener;
+    if (q.jackpot) {
+      opener = () => openJackpot(q, cat, rowIdx);
     } else if (q.wof) {
-      openWof(q, cat, rowIdx);
+      opener = () => openWof(q, cat, rowIdx);
     } else {
-      openFlip(q, cat, rowIdx);
+      opener = () => openFlip(q, cat, rowIdx);
+    }
+
+    if (q.dailyDouble) {
+      triggerDailyDouble(opener);
+    } else {
+      opener();
     }
   }
 
@@ -1735,7 +1742,6 @@
 
     document.getElementById('jackpot-category').textContent = cat;
     document.getElementById('jackpot-points').textContent   = `$${pointValues[rowIdx]}`;
-    document.getElementById('jackpot-guess-count').textContent = '0';
     document.getElementById('jackpot-award-row').classList.remove('visible');
     document.getElementById('jackpot-solve-prompt').classList.remove('visible');
 
@@ -1807,7 +1813,6 @@
 
     // Increment guess count and reveal next layer
     jpGuessCount++;
-    document.getElementById('jackpot-guess-count').textContent = jpGuessCount;
     if (jpGuessCount <= JP_MAX) {
       const layer = document.getElementById(JP_LAYERS[jpGuessCount - 1]);
       if (layer) layer.classList.add('visible');
@@ -1858,8 +1863,10 @@
     document.querySelectorAll('.jackpot-letter:not(:disabled)').forEach(btn => {
       btn.disabled = true;
     });
-    // Show canvas if it was hidden
-    document.getElementById('jackpot-canvas').style.opacity = '1';
+    // Put the jackalope back in his box — undo the bounce/slide animation
+    const canvas = document.getElementById('jackpot-canvas');
+    canvas.classList.remove('animating');
+    canvas.style.opacity = '1';
     JP_LAYERS.forEach(id => document.getElementById(id).classList.add('visible'));
 
     document.getElementById('jackpot-award-row').classList.add('visible');
@@ -1883,7 +1890,6 @@
     <div class="jackpot-header">
       <div class="jackpot-tag" id="jackpot-category">Category</div>
       <div class="jackpot-points" id="jackpot-points">$400</div>
-      <div class="jackpot-guess-count">Guesses: <span id="jackpot-guess-count">0</span> / 9</div>
     </div>
     <div class="jackpot-question">What is Dallas College's mission?</div>
     <div class="jackpot-body">
@@ -1964,7 +1970,7 @@
     </svg>
   </div>
   <div class="dd-text">
-    <div class="dd-label">$500 &bull; Your Mission, Should You Choose to Accept It</div>
+    <div class="dd-label">$400 &bull; Your Mission, Should You Choose to Accept It</div>
     <div class="dd-main">Daily<br>Double!</div>
     <div class="dd-sub">Get ready&hellip;</div>
   </div>
