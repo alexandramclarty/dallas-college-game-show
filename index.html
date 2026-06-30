@@ -497,7 +497,7 @@
       padding-bottom: 4px; /* align baseline with tile bottom */
     }
     .wof-tile {
-      width: 36px;
+      width: 32px;
       height: 46px;
       border-radius: 5px;
       border: 2px solid rgba(245,197,24,0.5);
@@ -512,6 +512,11 @@
       transition: color 0.2s, background 0.2s, border-color 0.2s;
       position: relative;
       overflow: hidden;
+    }
+    /* Tight-knit group for multi-word concepts that must stay on one line, e.g. "economically viable" */
+    .wof-tile-group {
+      display: flex;
+      gap: 10px;
     }
     .wof-tile.revealed {
       color: var(--white);
@@ -849,7 +854,7 @@
     .jackpot-phrase {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px 10px;
+      gap: 16px 20px;
       align-items: flex-end;
     }
     .jackpot-word {
@@ -1238,7 +1243,7 @@
       { q: "Cedar Valley campus is represented by a bird-based mascot, though this team name sounds more like a nod to our region's dominant weather.", a: "The Suns", aImg: "assets/cv-suns.jpg" },
       { q: "The El Centro campus mascot is this bird — fitting, since they're often spotted at White Rock Lake.", a: "Eagles", aImg: "assets/el-centro-eagles.webp" },
       { q: "Eastfield campus's mascot changed from a harvester (the human kind) to this insect in 2017.", a: "Harvester Bee", aImg: "assets/eastfield-bees.jpg" },
-      { q: "This team represents the North Lake campus, which has a large bronze horse statue dedicated to it.", a: "Blazers", aImg: "assets/north-lake-blazers.png" },
+      { q: "This mascot represents the North Lake campus, which has a large bronze horse statue dedicated to it.", a: "Blazers", aImg: "assets/north-lake-blazers.png" },
       { q: "This mascot calls Richland campus home — and yes, these birds actually swim on the campus's lake.", a: "Thunderducks", aImg: "assets/richland-thunderducks.jpg" },
     ],
     "Meet the Class": [
@@ -1258,7 +1263,7 @@
     "Your Mission, Should You Choose to Accept It": [
       { q: "The purpose of Dallas College is to ensure Dallas County is ___, _______ and ________ ________ for current and future generations.",
         wof: true,
-        wofContext: "The purpose of Dallas College is to ensure Dallas County is ___ , ___ and ___ ___ for current and future generations.",
+        wofContext: "The purpose of Dallas College is to ensure Dallas County is ___ , ___ and ___+___ for current and future generations.",
         wofPhrase: "vibrant growing economically viable",
         a: "vibrant, growing, economically viable" },
       { q: "Dallas College recently became one of only a handful of community colleges in the country to offer this type of degree.", a: "A bachelor's degree" },
@@ -1561,6 +1566,9 @@
     // With context: walk through the context string token by token.
     // Split on spaces but preserve punctuation attached to words.
     // Each ___ gets replaced (in order) by the next guessable word's tiles.
+    // A token like "___+___" groups multiple consecutive blanks tightly
+    // together (e.g. "economically viable") so they read as one concept
+    // and stay on the same line.
     const guessWords = phrase.split(' ');
     let guessIdx = 0;
 
@@ -1573,6 +1581,17 @@
         if (guessIdx < guessWords.length) {
           container.appendChild(makeTileWord(guessWords[guessIdx++]));
         }
+      } else if (/^(___\+)+___$/.test(token)) {
+        // Grouped blanks — render tightly together in one wrapper
+        const blankCount = token.split('+').length;
+        const group = document.createElement('div');
+        group.className = 'wof-tile-group';
+        for (let i = 0; i < blankCount; i++) {
+          if (guessIdx < guessWords.length) {
+            group.appendChild(makeTileWord(guessWords[guessIdx++]));
+          }
+        }
+        container.appendChild(group);
       } else {
         // Plain text token — could have trailing punctuation like "is," or "and"
         container.appendChild(makePlainWord(token));
