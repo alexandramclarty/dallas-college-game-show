@@ -1,0 +1,2466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CETL's Dallas College Game Show</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --dc-blue:      #002F87;
+      --dc-blue-dark: #001a52;
+      --dc-blue-mid:  #00256a;
+      --dc-red:       #E52626;
+      --bright-blue:  #1E8EF7;
+      --green:        #309C3F;
+      --gold:         #F5C518;
+      --gold-dark:    #c9a200;
+      --white:        #ffffff;
+      --off-white:    #EEF2FF;
+      --gray:         #666666;
+      --team-champy:     #1E8EF7;
+      --team-sasquatch:  #309C3F;
+      --team-thunderbird:#E52626;
+      --team-jackalope:  #F5C518;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--dc-blue-dark);
+      color: var(--white);
+      font-family: 'Montserrat', sans-serif;
+      overflow-x: hidden;
+    }
+
+    .game-wrapper {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      padding: 0 0 16px;
+    }
+
+    /* ── Header ── */
+    .game-header {
+      text-align: center;
+      padding: 18px 20px 12px;
+      background: linear-gradient(180deg, #00185e 0%, var(--dc-blue-dark) 100%);
+      border-bottom: 3px solid var(--gold);
+      position: relative;
+    }
+    .game-header h1 {
+      font-size: clamp(1.1rem, 3vw, 1.9rem);
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--gold);
+      text-shadow: 0 0 24px rgba(245,197,24,0.4), 2px 2px 0 rgba(0,0,0,0.5);
+      line-height: 1.15;
+    }
+    .game-header .subtitle {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--off-white);
+      opacity: 0.7;
+      margin-top: 3px;
+    }
+    .btn-reset {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.5);
+      border-radius: 6px;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .btn-reset:hover {
+      background: rgba(229,38,38,0.3);
+      border-color: var(--dc-red);
+      color: #fff;
+    }
+
+    /* ── Board ── */
+    .board-container {
+      flex: 1;
+      padding: 14px 12px 8px;
+      max-width: 1300px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+    .category-header {
+      background: var(--dc-blue);
+      border: 2px solid rgba(245,197,24,0.5);
+      border-radius: 6px;
+      padding: 12px 8px;
+      text-align: center;
+      font-size: clamp(0.6rem, 1.4vw, 0.8rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--white);
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.2;
+    }
+    .card {
+      background: var(--dc-blue);
+      border: 2px solid rgba(245,197,24,0.35);
+      border-radius: 6px;
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(245,197,24,0.08) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .card:hover:not(.used) {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 8px 28px rgba(245,197,24,0.3), 0 0 0 2px var(--gold);
+      background: var(--dc-blue-mid);
+      z-index: 2;
+    }
+    .card:active:not(.used) { transform: scale(0.98); }
+    .card .card-value {
+      font-size: clamp(1.2rem, 2.8vw, 2rem);
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 0 0 16px rgba(245,197,24,0.5), 2px 2px 0 rgba(0,0,0,0.5);
+      letter-spacing: 0.02em;
+    }
+    .card.used {
+      background: var(--dc-blue-dark);
+      border-color: rgba(255,255,255,0.07);
+      cursor: default;
+      opacity: 0.4;
+    }
+    .card.used .card-value { opacity: 0; }
+
+    /* ════════════════════════════════════════
+       STANDARD FLIP MODAL
+    ════════════════════════════════════════ */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,10,40,0.92);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(4px);
+      flex-direction: column;
+      gap: 16px;
+    }
+    .modal-overlay.active { display: flex; }
+
+    .flip-scene {
+      width: 100%;
+      max-width: 760px;
+      height: 50vh;
+      min-height: 300px;
+      max-height: 560px;
+      perspective: 1200px;
+    }
+    .flip-card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1);
+    }
+    .flip-card.flipped { transform: rotateY(180deg); }
+    .flip-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 12px;
+      padding: 28px 32px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 60px rgba(245,197,24,0.25), 0 24px 60px rgba(0,0,0,0.6);
+      overflow: hidden;
+    }
+    .flip-front {
+      background: var(--dc-blue);
+      border: 3px solid var(--gold);
+      transform: rotateY(0deg);
+    }
+    .flip-back {
+      background: var(--dc-blue-mid);
+      border: 3px solid #4af0c0;
+      transform: rotateY(180deg);
+    }
+    .face-tag {
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      opacity: 0.85;
+      flex-shrink: 0;
+    }
+    .flip-front .face-tag { color: var(--gold); }
+    .flip-back  .face-tag { color: #4af0c0; }
+    .face-points {
+      font-size: 2.6rem;
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 0 0 24px rgba(245,197,24,0.5);
+      line-height: 1;
+      margin-bottom: 14px;
+      flex-shrink: 0;
+    }
+    .face-body {
+      font-size: clamp(1.1rem, 2.6vw, 1.5rem);
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.5;
+      flex: 1;
+      overflow: hidden;
+    }
+    /* Front: question text with optional image stacked below */
+    .flip-front .face-body {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .flip-front .face-body img {
+      max-width: 100%;
+      max-height: 85%;
+      border-radius: 8px;
+      object-fit: contain;
+      display: block;
+    }
+    /* Back: image left, question + answer right */
+    .flip-back .face-body {
+      display: flex;
+      flex-direction: row;
+      gap: 18px;
+      align-items: flex-start;
+    }
+    .back-image-col {
+      flex: 0 0 48%;
+      max-width: 48%;
+      height: 100%;
+      display: flex;
+      align-items: flex-start;
+    }
+    .answer-image {
+      max-width: 100%;
+      max-height: 85%;
+      border-radius: 8px;
+      object-fit: contain;
+      display: block;
+    }
+    .back-text-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow: hidden;
+    }
+    /* No image: full-width, top+left aligned */
+    .flip-back .face-body.no-image {
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      text-align: left;
+    }
+    .back-question-repeat {
+      font-size: clamp(0.95rem, 1.9vw, 1.15rem);
+      font-weight: 600;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.4;
+      font-style: italic;
+    }
+    .back-answer-text {
+      font-size: clamp(1.2rem, 2.6vw, 1.6rem);
+      font-weight: 800;
+      color: var(--white);
+      line-height: 1.4;
+    }
+    /* Multiple choice list on question face */
+    .mc-list {
+      list-style: none;
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .mc-item {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      font-size: clamp(1rem, 2.4vw, 1.35rem);
+      font-weight: 700;
+      color: var(--white);
+    }
+    .mc-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.8em;
+      height: 1.8em;
+      border-radius: 50%;
+      background: var(--gold);
+      color: var(--dc-blue-dark);
+      font-size: 0.75em;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+    @keyframes hintPulse {
+      0%, 100% { opacity: 0.35; }
+      50%       { opacity: 0.65; }
+    }
+
+    /* ── Shared controls area ── */
+    .modal-controls {
+      width: 100%;
+      max-width: 760px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .award-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease 0.3s;
+      width: 100%;
+    }
+    .award-row.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .award-label {
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--off-white);
+      opacity: 0.7;
+      width: 100%;
+      margin-bottom: 2px;
+    }
+    .btn {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 6px;
+      padding: 13px 20px;
+      cursor: pointer;
+      transition: transform 0.1s, filter 0.1s;
+    }
+    .btn:hover  { transform: translateY(-2px); filter: brightness(1.1); }
+    .btn:active { transform: scale(0.97); }
+    .btn-flip {
+      background: var(--gold);
+      color: var(--dc-blue-dark);
+      box-shadow: 0 4px 14px rgba(245,197,24,0.4);
+      flex: 1;
+    }
+    .btn-close {
+      background: rgba(255,255,255,0.12);
+      color: var(--white);
+    }
+    .btn-close:hover { background: rgba(255,255,255,0.2); }
+    .btn-team {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 16px;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      border: 2px solid transparent;
+      font-family: 'Montserrat', sans-serif;
+      cursor: pointer;
+      transition: transform 0.1s, filter 0.1s;
+      flex: 1;
+    }
+    .btn-team:hover  { transform: translateY(-2px); filter: brightness(1.15); }
+    .btn-team:active { transform: scale(0.96); }
+    .btn-team img { width: 30px; height: 30px; object-fit: contain; }
+    .btn-team.champy      { background: var(--team-champy);     color: #fff; box-shadow: 0 3px 12px rgba(30,142,247,0.4); }
+    .btn-team.sasquatch   { background: var(--team-sasquatch);  color: #fff; box-shadow: 0 3px 12px rgba(48,156,63,0.4); }
+    .btn-team.thunderbird { background: var(--team-thunderbird);color: #fff; box-shadow: 0 3px 12px rgba(229,38,38,0.4); }
+    .btn-team.jackalope   { background: var(--team-jackalope);  color: var(--dc-blue-dark); box-shadow: 0 3px 12px rgba(245,197,24,0.4); }
+    .action-row { display: flex; gap: 12px; width: 100%; }
+
+    /* ════════════════════════════════════════
+       WHEEL OF FORTUNE MODAL
+    ════════════════════════════════════════ */
+    .wof-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,10,40,0.92);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(4px);
+      flex-direction: column;
+      gap: 14px;
+    }
+    .wof-overlay.active { display: flex; }
+
+    .wof-card {
+      width: 100%;
+      max-width: 760px;
+      background: var(--dc-blue);
+      border: 3px solid var(--gold);
+      border-radius: 12px;
+      padding: 28px 32px;
+      box-shadow: 0 0 60px rgba(245,197,24,0.25), 0 24px 60px rgba(0,0,0,0.6);
+    }
+
+    .wof-header {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .wof-tag {
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.75;
+    }
+    .wof-points {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 0 0 20px rgba(245,197,24,0.5);
+      line-height: 1;
+    }
+
+    /* The phrase display — inline flow of plain words and tile words */
+    .wof-phrase {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      gap: 8px 5px;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+    .wof-word {
+      display: flex;
+      gap: 4px;
+    }
+    /* Plain (pre-revealed) words sit inline with tiles */
+    .wof-plain-word {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1;
+      padding-bottom: 4px; /* align baseline with tile bottom */
+    }
+    .wof-tile {
+      width: 32px;
+      height: 46px;
+      border-radius: 5px;
+      border: 2px solid rgba(245,197,24,0.5);
+      background: var(--dc-blue-mid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: transparent; /* hidden until revealed */
+      text-transform: uppercase;
+      transition: color 0.2s, background 0.2s, border-color 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Tight-knit group for multi-word concepts that must stay on one line, e.g. "economically viable" */
+    .wof-tile-group {
+      display: flex;
+      gap: 20px;
+    }
+    .wof-tile.revealed {
+      color: var(--white);
+      background: var(--dc-blue);
+      border-color: var(--gold);
+    }
+    .wof-tile.revealed::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(245,197,24,0.15) 0%, transparent 60%);
+    }
+    /* Flash animation when a letter is revealed */
+    .wof-tile.flash {
+      animation: tileFlash 0.4s ease-out;
+    }
+    @keyframes tileFlash {
+      0%   { background: var(--gold); }
+      100% { background: var(--dc-blue); }
+    }
+
+    /* Alphabet buttons */
+    .wof-alphabet {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .wof-letter {
+      width: 38px;
+      height: 38px;
+      border-radius: 6px;
+      border: none;
+      background: var(--dc-blue-mid);
+      color: var(--white);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.1s, background 0.15s;
+      text-transform: uppercase;
+      border: 2px solid rgba(255,255,255,0.15);
+    }
+    .wof-letter:hover:not(:disabled) {
+      transform: translateY(-2px);
+      background: var(--dc-blue);
+      border-color: var(--gold);
+    }
+    .wof-letter:disabled { cursor: default; opacity: 0.5; }
+    .wof-letter.hit  { background: var(--green);  border-color: var(--green);  color: #fff; opacity: 1 !important; }
+    .wof-letter.miss { background: var(--dc-red);  border-color: var(--dc-red); color: #fff; opacity: 1 !important; }
+
+    /* WoF action buttons */
+    .wof-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn-wof-reveal {
+      background: var(--gold);
+      color: var(--dc-blue-dark);
+      box-shadow: 0 4px 14px rgba(245,197,24,0.4);
+      flex: 1;
+    }
+
+    /* Award row reused inside WoF */
+    .wof-award-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+      width: 100%;
+      max-width: 760px;
+    }
+    .wof-award-row.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ── Scoreboard ── */
+    .scoreboard {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      padding: 8px 12px 0;
+      max-width: 1300px;
+      width: 100%;
+      margin: 0 auto;
+    }
+    .score-card {
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+      transition: box-shadow 0.3s;
+    }
+    .score-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0.12;
+      background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .score-card.champy      { background: var(--team-champy);     box-shadow: 0 4px 16px rgba(30,142,247,0.3); }
+    .score-card.sasquatch   { background: var(--team-sasquatch);  box-shadow: 0 4px 16px rgba(48,156,63,0.3); }
+    .score-card.thunderbird { background: var(--team-thunderbird);box-shadow: 0 4px 16px rgba(229,38,38,0.3); }
+    .score-card.jackalope   { background: var(--team-jackalope);  box-shadow: 0 4px 16px rgba(245,197,24,0.3); }
+    .score-card.pulse { animation: scorePulse 0.5s ease-out; }
+    @keyframes scorePulse {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(1.06); }
+      100% { transform: scale(1); }
+    }
+    .score-logo { width: 48px; height: 48px; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+    .score-info { flex: 1; }
+    .score-team-name { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.9); line-height: 1; margin-bottom: 2px; }
+    .score-card.jackalope .score-team-name { color: rgba(0,25,80,0.9); }
+    .score-points { font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: 900; color: #fff; line-height: 1; text-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+    .score-card.jackalope .score-points { color: var(--dc-blue-dark); }
+    .score-controls { display: flex; flex-direction: column; gap: 4px; }
+    .score-adj-btn {
+      width: 24px; height: 24px; border-radius: 4px; border: none;
+      background: rgba(0,0,0,0.2); color: #fff; font-size: 1rem; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      line-height: 1; transition: background 0.1s; font-family: 'Montserrat', sans-serif;
+    }
+    .score-card.jackalope .score-adj-btn { color: var(--dc-blue-dark); }
+    .score-adj-btn:hover { background: rgba(0,0,0,0.35); }
+
+    .game-footer {
+      text-align: center;
+      padding: 10px 20px 4px;
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.88) translateY(20px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    @media (max-width: 700px) {
+      .board { gap: 5px; }
+      .card { min-height: 52px; }
+      .scoreboard { grid-template-columns: repeat(2, 1fr); }
+      .flip-face { padding: 22px 18px; }
+      .face-points { font-size: 2rem; }
+      .wof-tile { width: 28px; height: 38px; font-size: 1rem; }
+      .wof-letter { width: 32px; height: 32px; font-size: 0.75rem; }
+    }
+    @media (max-width: 480px) {
+      .category-header { font-size: 0.55rem; padding: 8px 4px; min-height: 52px; }
+      .card .card-value { font-size: 1rem; }
+    }
+    /* ── Lightbox ── */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(0,0,0,0.92);
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+      padding: 24px;
+    }
+    .lightbox.active { display: flex; }
+    .lightbox img {
+      max-width: 92vw;
+      max-height: 92vh;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 0 60px rgba(0,0,0,0.8);
+      cursor: default;
+      animation: lightboxIn 0.2s ease-out;
+    }
+    @keyframes lightboxIn {
+      from { opacity: 0; transform: scale(0.94); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: #fff;
+      font-size: 1.6rem;
+      line-height: 1;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Montserrat', sans-serif;
+      transition: background 0.15s;
+    }
+    .lightbox-close:hover { background: rgba(255,255,255,0.28); }
+    /* Clickable image cursor hint */
+    .answer-image, .flip-front .face-body img, .wof-phrase img {
+      cursor: zoom-in;
+    }
+
+    /* ════════════════════════════════════════
+       JACKALOPE JACKPOT MODAL
+    ════════════════════════════════════════ */
+    .jackpot-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      backdrop-filter: blur(4px);
+      flex-direction: column;
+      gap: 12px;
+    }
+    .jackpot-overlay.active { display: flex; }
+
+    .jackpot-card {
+      width: 100%;
+      max-width: 900px;
+      background: #fff;
+      border: 3px solid #000;
+      border-radius: 12px;
+      padding: 20px 24px;
+      box-shadow: 0 0 0 6px #fff, 0 0 0 9px #000, 0 24px 60px rgba(0,0,0,0.7);
+      color: #000;
+    }
+
+    .jackpot-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 14px;
+      border-bottom: 2px solid #000;
+      padding-bottom: 10px;
+    }
+    .jackpot-tag {
+      font-size: 0.7rem;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #000;
+    }
+    .jackpot-points {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #000;
+      line-height: 1;
+    }
+    .jackpot-guess-count {
+      margin-left: auto;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #555;
+    }
+    .jackpot-guess-count span {
+      color: #000;
+      font-size: 1.1rem;
+    }
+
+    /* Main content: jackalope left, phrase+alphabet right */
+    .jackpot-body {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    /* Jackalope canvas */
+    .jackpot-canvas {
+      flex: 0 0 220px;
+      width: 220px;
+      height: 280px;
+      position: relative;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      background: #fafafa;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .jackpot-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .jackpot-layer.visible { opacity: 1; }
+
+    /* Jackpot animation — jackalope bounces then all layers fade */
+    @keyframes jackpotBounce {
+      0%   { transform: translateX(0) rotate(0deg); }
+      15%  { transform: translateX(-8px) rotate(-3deg); }
+      30%  { transform: translateX(12px) rotate(3deg); }
+      45%  { transform: translateX(-10px) rotate(-2deg); }
+      60%  { transform: translateX(16px) rotate(2deg); }
+      75%  { transform: translateX(-6px) rotate(-1deg); }
+      90%  { transform: translateX(8px) rotate(1deg); }
+      100% { transform: translateX(200px) rotate(15deg); }
+    }
+    .jackpot-canvas.animating {
+      animation: jackpotBounce 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+
+    /* Right side: phrase + alphabet */
+    .jackpot-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    /* Phrase tiles — b&w style */
+    .jackpot-phrase {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px 20px;
+      align-items: flex-end;
+    }
+    .jackpot-word {
+      display: flex;
+      gap: 3px;
+    }
+    .jackpot-tile {
+      width: 26px;
+      height: 34px;
+      border: 2px solid #000;
+      border-radius: 3px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 900;
+      color: transparent;
+      text-transform: uppercase;
+      font-family: 'Montserrat', sans-serif;
+      transition: color 0.2s, background 0.2s;
+    }
+    .jackpot-tile.revealed {
+      color: #000;
+      background: #f5f5f5;
+    }
+    .jackpot-tile.flash {
+      animation: jackpotTileFlash 0.35s ease-out;
+    }
+    @keyframes jackpotTileFlash {
+      0%   { background: #000; color: #fff; }
+      100% { background: #f5f5f5; color: #000; }
+    }
+    /* Stolen tiles — grey out when jackpot triggers */
+    .jackpot-tile.stolen {
+      background: #eee;
+      border-color: #bbb;
+      color: transparent !important;
+    }
+    /* Plain words in phrase */
+    .jackpot-plain-word {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #000;
+      padding-bottom: 3px;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    /* Alphabet */
+    .jackpot-alphabet {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .jackpot-letter {
+      width: 32px;
+      height: 32px;
+      border: 2px solid #000;
+      border-radius: 4px;
+      background: #fff;
+      color: #000;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
+      transition: background 0.1s, color 0.1s;
+    }
+    .jackpot-letter:hover:not(:disabled) {
+      background: #000;
+      color: #fff;
+    }
+    .jackpot-letter:disabled { cursor: default; }
+    .jackpot-letter.hit  { background: #000; color: #fff; border-color: #000; opacity: 1 !important; }
+    .jackpot-letter.miss { background: #ddd; color: #999; border-color: #bbb; opacity: 1 !important; }
+
+    /* Stolen state: alphabet locks */
+    .jackpot-letter.locked {
+      background: #eee;
+      color: #bbb;
+      border-color: #ccc;
+      cursor: default;
+    }
+
+    /* Actions */
+    .jackpot-question {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      font-weight: 700;
+      color: #000;
+      margin-bottom: 14px;
+    }
+    .jackpot-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .btn-jackpot-reveal {
+      background: #000;
+      color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 6px;
+      padding: 11px 20px;
+      cursor: pointer;
+      flex: 1;
+      transition: background 0.1s;
+    }
+    .btn-jackpot-reveal:hover { background: #333; }
+    .btn-jackpot-close {
+      background: #fff;
+      color: #000;
+      border: 2px solid #000;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border-radius: 6px;
+      padding: 11px 20px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .btn-jackpot-close:hover { background: #f0f0f0; }
+
+    /* Solve prompt that appears after jackpot triggers */
+    .jackpot-solve-prompt {
+      display: none;
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #000;
+      text-align: center;
+      padding: 8px;
+      border: 2px dashed #000;
+      border-radius: 6px;
+      animation: solvePromptIn 0.4s ease-out;
+    }
+    .jackpot-solve-prompt.visible { display: block; }
+    @keyframes solvePromptIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    /* Award row for jackpot — white background */
+    .jackpot-award-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      width: 100%;
+      max-width: 900px;
+    }
+    .jackpot-award-row.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .jackpot-award-row .award-label {
+      color: #fff;
+    }
+
+    /* ════════════════════════════════════════
+       JACKALOPE JACKPOT MODAL
+    ════════════════════════════════════════ */
+    .jackpot-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      backdrop-filter: blur(4px);
+      flex-direction: column;
+      gap: 12px;
+    }
+    .jackpot-overlay.active { display: flex; }
+
+    .jackpot-card {
+      width: 100%;
+      max-width: 900px;
+      background: #fff;
+      border: 3px solid #000;
+      border-radius: 12px;
+      padding: 20px 24px;
+      box-shadow: 0 0 0 6px #fff, 0 0 0 9px #000, 0 24px 60px rgba(0,0,0,0.7);
+      color: #000;
+    }
+
+    .jackpot-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 14px;
+      border-bottom: 2px solid #000;
+      padding-bottom: 10px;
+    }
+    .jackpot-tag {
+      font-size: 0.7rem;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #000;
+    }
+    .jackpot-points {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #000;
+      line-height: 1;
+    }
+    .jackpot-guess-count {
+      margin-left: auto;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #555;
+    }
+    .jackpot-guess-count span {
+      color: #000;
+      font-size: 1.1rem;
+    }
+
+    /* Main content: jackalope left, phrase+alphabet right */
+    .jackpot-body {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    /* Jackalope canvas */
+    .jackpot-canvas {
+      flex: 0 0 220px;
+      width: 220px;
+      height: 280px;
+      position: relative;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      background: #fafafa;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .jackpot-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .jackpot-layer.visible { opacity: 1; }
+
+    /* Jackpot animation — jackalope bounces then all layers fade */
+    @keyframes jackpotBounce {
+      0%   { transform: translateX(0) rotate(0deg); }
+      15%  { transform: translateX(-8px) rotate(-3deg); }
+      30%  { transform: translateX(12px) rotate(3deg); }
+      45%  { transform: translateX(-10px) rotate(-2deg); }
+      60%  { transform: translateX(16px) rotate(2deg); }
+      75%  { transform: translateX(-6px) rotate(-1deg); }
+      90%  { transform: translateX(8px) rotate(1deg); }
+      100% { transform: translateX(200px) rotate(15deg); }
+    }
+    .jackpot-canvas.animating {
+      animation: jackpotBounce 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+
+    /* Right side: phrase + alphabet */
+    .jackpot-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    /* Phrase tiles — b&w style */
+    .jackpot-phrase {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px 20px;
+      align-items: flex-end;
+    }
+    .jackpot-word {
+      display: flex;
+      gap: 3px;
+    }
+    .jackpot-tile {
+      width: 26px;
+      height: 34px;
+      border: 2px solid #000;
+      border-radius: 3px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 900;
+      color: transparent;
+      text-transform: uppercase;
+      font-family: 'Montserrat', sans-serif;
+      transition: color 0.2s, background 0.2s;
+    }
+    .jackpot-tile.revealed {
+      color: #000;
+      background: #f5f5f5;
+    }
+    .jackpot-tile.flash {
+      animation: jackpotTileFlash 0.35s ease-out;
+    }
+    @keyframes jackpotTileFlash {
+      0%   { background: #000; color: #fff; }
+      100% { background: #f5f5f5; color: #000; }
+    }
+    /* Stolen tiles — grey out when jackpot triggers */
+    .jackpot-tile.stolen {
+      background: #eee;
+      border-color: #bbb;
+      color: transparent !important;
+    }
+    /* Plain words in phrase */
+    .jackpot-plain-word {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #000;
+      padding-bottom: 3px;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    /* Alphabet */
+    .jackpot-alphabet {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    .jackpot-letter {
+      width: 32px;
+      height: 32px;
+      border: 2px solid #000;
+      border-radius: 4px;
+      background: #fff;
+      color: #000;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
+      transition: background 0.1s, color 0.1s;
+    }
+    .jackpot-letter:hover:not(:disabled) {
+      background: #000;
+      color: #fff;
+    }
+    .jackpot-letter:disabled { cursor: default; }
+    .jackpot-letter.hit  { background: #000; color: #fff; border-color: #000; opacity: 1 !important; }
+    .jackpot-letter.miss { background: #ddd; color: #999; border-color: #bbb; opacity: 1 !important; }
+
+    /* Stolen state: alphabet locks */
+    .jackpot-letter.locked {
+      background: #eee;
+      color: #bbb;
+      border-color: #ccc;
+      cursor: default;
+    }
+
+    /* Actions */
+    .jackpot-question {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      font-weight: 700;
+      color: #000;
+      margin-bottom: 14px;
+    }
+    .jackpot-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .btn-jackpot-reveal {
+      background: #000;
+      color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 6px;
+      padding: 11px 20px;
+      cursor: pointer;
+      flex: 1;
+      transition: background 0.1s;
+    }
+    .btn-jackpot-reveal:hover { background: #333; }
+    .btn-jackpot-close {
+      background: #fff;
+      color: #000;
+      border: 2px solid #000;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border-radius: 6px;
+      padding: 11px 20px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .btn-jackpot-close:hover { background: #f0f0f0; }
+
+    /* Solve prompt that appears after jackpot triggers */
+    .jackpot-solve-prompt {
+      display: none;
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #000;
+      text-align: center;
+      padding: 8px;
+      border: 2px dashed #000;
+      border-radius: 6px;
+      animation: solvePromptIn 0.4s ease-out;
+    }
+    .jackpot-solve-prompt.visible { display: block; }
+    @keyframes solvePromptIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    /* Award row for jackpot — white background */
+    .jackpot-award-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      width: 100%;
+      max-width: 900px;
+    }
+    .jackpot-award-row.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .jackpot-award-row .award-label {
+      color: #fff;
+    }
+
+    /* ════════════════════════════════════════
+       MODE SELECTOR
+    ════════════════════════════════════════ */
+    .mode-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: var(--dc-blue-dark);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 32px;
+      padding: 24px;
+    }
+    .mode-overlay.active { display: flex; }
+
+    .mode-header {
+      text-align: center;
+    }
+    .mode-header h2 {
+      font-size: clamp(1.4rem, 4vw, 2.4rem);
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gold);
+      text-shadow: 0 0 30px rgba(245,197,24,0.4);
+      line-height: 1.1;
+    }
+    .mode-header p {
+      font-size: clamp(0.8rem, 1.8vw, 1rem);
+      font-weight: 600;
+      color: rgba(255,255,255,0.6);
+      margin-top: 8px;
+      letter-spacing: 0.05em;
+    }
+
+    .mode-cards {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      max-width: 860px;
+    }
+
+    .mode-card {
+      flex: 1;
+      min-width: 280px;
+      max-width: 380px;
+      background: var(--dc-blue);
+      border: 3px solid rgba(245,197,24,0.4);
+      border-radius: 16px;
+      padding: 32px 28px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .mode-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(245,197,24,0.07) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .mode-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.4), 0 0 0 3px var(--gold);
+      border-color: var(--gold);
+    }
+    .mode-card:active { transform: scale(0.98); }
+
+    .mode-card-crest {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
+    }
+
+    .mode-card-badge {
+      font-size: 0.65rem;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: -4px;
+    }
+    .mode-card.easy .mode-card-badge {
+      background: rgba(48,156,63,0.25);
+      color: #6ddb7e;
+      border: 1px solid rgba(48,156,63,0.4);
+    }
+    .mode-card.hard .mode-card-badge {
+      background: rgba(229,38,38,0.2);
+      color: #ff7b7b;
+      border: 1px solid rgba(229,38,38,0.35);
+    }
+
+    .mode-card-title {
+      font-size: clamp(1.2rem, 2.8vw, 1.6rem);
+      font-weight: 900;
+      color: var(--white);
+      line-height: 1.1;
+      letter-spacing: 0.03em;
+    }
+
+    .mode-card-desc {
+      font-size: clamp(0.78rem, 1.6vw, 0.9rem);
+      font-weight: 600;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.5;
+    }
+
+    .mode-card-btn {
+      margin-top: 4px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 28px;
+      cursor: pointer;
+      width: 100%;
+      transition: filter 0.15s;
+    }
+    .mode-card.easy .mode-card-btn {
+      background: var(--green);
+      color: #fff;
+    }
+    .mode-card.hard .mode-card-btn {
+      background: var(--dc-red);
+      color: #fff;
+    }
+    .mode-card-btn:hover { filter: brightness(1.15); }
+
+    /* Mode indicator badge on the game header */
+    .mode-badge {
+      position: absolute;
+      top: 12px;
+      left: 16px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: filter 0.15s;
+    }
+    .mode-badge:hover { filter: brightness(1.2); }
+    .mode-badge.easy {
+      background: rgba(48,156,63,0.3);
+      color: #6ddb7e;
+      border: 1px solid rgba(48,156,63,0.5);
+    }
+    .mode-badge.hard {
+      background: rgba(229,38,38,0.25);
+      color: #ff8888;
+      border: 1px solid rgba(229,38,38,0.4);
+    }
+  </style>
+</head>
+<body>
+
+<div class="game-wrapper">
+  <!-- ── Mode Selector Overlay ── -->
+  <div class="mode-overlay active" id="mode-overlay">
+    <div class="mode-header">
+      <h2>Choose Your<br>Experience</h2>
+      <p>Select a difficulty level to begin. You can restart and change modes at any time.</p>
+    </div>
+    <div class="mode-cards">
+      <div class="mode-card easy" onclick="selectMode('easy')">
+        <img class="mode-card-crest" src="assets/Cryptid_Crest_Crest_Champy_Blue.png" alt="Champy" />
+        <div class="mode-card-badge">First Sighting</div>
+        <div class="mode-card-title">New to<br>Dallas College</div>
+        <div class="mode-card-desc">Friendlier phrasing and more multiple choice options. Great for brand-new faculty.</div>
+        <button class="mode-card-btn">Start — First Sighting</button>
+      </div>
+      <div class="mode-card hard" onclick="selectMode('hard')">
+        <img class="mode-card-crest" src="assets/Cryptid_Crest_Crest_Jackalope_Yellow.png" alt="Jackalope" />
+        <div class="mode-card-badge">True Believer</div>
+        <div class="mode-card-title">Dallas College<br>Veteran</div>
+        <div class="mode-card-desc">Full questions, fewer hints. For faculty who've been around the block a few times.</div>
+        <button class="mode-card-btn">Start — True Believer</button>
+      </div>
+    </div>
+  </div>
+
+  <header class="game-header">
+    <h1>CETL's Dallas College Game Show</h1>
+    <div class="subtitle">Center for Excellence in Teaching &amp; Learning</div>
+    <button class="btn-reset" onclick="resetGame()" title="Clear all scores and used cards">↺ Reset Game</button>
+    <button class="mode-badge" id="mode-badge" onclick="showModeSelector()" title="Change mode"></button>
+  </header>
+  <div class="board-container">
+    <div class="board" id="game-board"></div>
+  </div>
+  <div class="scoreboard" id="scoreboard"></div>
+  <div class="game-footer">CETL &bull; Dallas College &bull; Game Show Edition</div>
+</div>
+
+<!-- ── Standard Flip Modal ── -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="flip-scene" id="flip-scene">
+    <div class="flip-card" id="flip-card">
+      <div class="flip-face flip-front">
+        <div class="face-tag" id="front-category">Category</div>
+        <div class="face-points" id="front-points">$100</div>
+        <div class="face-body" id="front-question">Question text here.</div>
+
+      </div>
+      <div class="flip-face flip-back">
+        <div class="face-tag">Answer</div>
+        <div class="face-body" id="back-answer">Answer here.</div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-controls">
+    <div class="action-row">
+      <button class="btn btn-flip" id="btn-flip" onclick="flipCard()">Reveal Answer</button>
+      <button class="btn btn-close" id="btn-close-pre" onclick="closeModal()">Close (No Award)</button>
+    </div>
+    <div class="award-row" id="award-row">
+      <div class="award-label">Award Points To:</div>
+      <button class="btn-team champy"      onclick="awardPoints('champy')"><img src="assets/Cryptid_Crest_Crest_Champy_Blue.png" alt="Champy" /> Champy</button>
+      <button class="btn-team sasquatch"   onclick="awardPoints('sasquatch')"><img src="assets/Cryptid_Crest_Crest_Sasquatch_Green.png" alt="Sasquatch" /> Sasquatch</button>
+      <button class="btn-team thunderbird" onclick="awardPoints('thunderbird')"><img src="assets/Cryptid_Crest_Crest_Thunderbird_Red.png" alt="Thunderbird" /> Thunderbird</button>
+      <button class="btn-team jackalope"   onclick="awardPoints('jackalope')"><img src="assets/Cryptid_Crest_Crest_Jackalope_Yellow.png" alt="Jackalope" /> Jackalope</button>
+      <button class="btn btn-close" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Wheel of Fortune Modal ── -->
+<div class="wof-overlay" id="wof-overlay">
+  <div class="wof-card">
+    <div class="wof-header">
+      <div class="wof-tag" id="wof-category">Category</div>
+      <div class="wof-points" id="wof-points">$400</div>
+    </div>
+    <!-- Phrase tiles rendered here (mix of plain words and tile words) -->
+    <div class="wof-phrase" id="wof-phrase"></div>
+    <!-- A–Z buttons -->
+    <div class="wof-alphabet" id="wof-alphabet"></div>
+    <!-- Actions -->
+    <div class="wof-actions">
+      <button class="btn btn-wof-reveal" onclick="wofRevealAll()">Reveal Answer</button>
+      <button class="btn btn-close" onclick="closeWof()">Close (No Award)</button>
+    </div>
+  </div>
+  <!-- Award row appears after reveal -->
+  <div class="wof-award-row" id="wof-award-row">
+    <div class="award-label">Award Points To:</div>
+    <button class="btn-team champy"      onclick="awardPoints('champy')"><img src="assets/Cryptid_Crest_Crest_Champy_Blue.png" alt="Champy" /> Champy</button>
+    <button class="btn-team sasquatch"   onclick="awardPoints('sasquatch')"><img src="assets/Cryptid_Crest_Crest_Sasquatch_Green.png" alt="Sasquatch" /> Sasquatch</button>
+    <button class="btn-team thunderbird" onclick="awardPoints('thunderbird')"><img src="assets/Cryptid_Crest_Crest_Thunderbird_Red.png" alt="Thunderbird" /> Thunderbird</button>
+    <button class="btn-team jackalope"   onclick="awardPoints('jackalope')"><img src="assets/Cryptid_Crest_Crest_Jackalope_Yellow.png" alt="Jackalope" /> Jackalope</button>
+  </div>
+</div>
+
+<script>
+  // ── Game Data ─────────────────────────────────────────────────────────────
+  // Special flag: wof: true  →  launches Wheel of Fortune mode
+  //               wofPhrase  →  the phrase to guess (required when wof: true)
+  // Answer types for standard cards:
+  //   { a: "Text" }                         text only
+  //   { aImg: "assets/img.png" }            image only
+  //   { a: "Text", aImg: "assets/img.png" } text + image
+
+  const categories = [
+    "Don't Mess with DFW",
+    "Know Your Campus Cryptids",
+    "Meet the Class",
+    "Not Just an Org Chart",
+    "Your Mission, Should You Choose to Accept It",
+  ];
+
+  // ── Question bank — add easy mode questions here when ready ────────────────
+  // Each mode is a full question set keyed by category name.
+  // Special flags: wof, wofContext, wofPhrase, jackpot, jackpotPhrase
+  // Answer fields: a (text), aImg (image path), qImg (question image), choices (MC array)
+
+  const questionBank = {
+    hard: {
+      "Don't Mess with DFW": [
+        { q: "This beloved invention was created in Dallas in 1971, inspired by a 7-Eleven Slurpee machine.", a: "The frozen margarita machine", aImg: "assets/frozen-marg-machine.webp" },
+        { q: "How many U.S. states have a smaller population than the DFW metro area?", a: "38", aImg: "assets/states-less-pop-than-dfw.webp" },
+        { q: "DFW Airport is so large it has its own zip code — and it's bigger than this entire island.", a: "Manhattan", aImg: "assets/dfw-larger-than-manhattan.jpg" },
+        { q: "DFW ranks this among the top 10 most diverse metro areas in the United States.", a: "5th", aImg: "assets/most-diverse-metros.png" },
+        { q: "DFW is growing at a rate of roughly this many people per day, or over 125,000 people per year.", a: "350" },
+      ],
+      "Know Your Campus Cryptids": [
+        { q: "Cedar Valley campus is represented by a bird-based mascot, though this team name sounds more like a nod to our region's dominant weather.", a: "The Suns", aImg: "assets/cv-suns.jpg" },
+        { q: "The El Centro campus mascot is this bird — fitting, since they're often spotted at White Rock Lake.", a: "Eagle", aImg: "assets/el-centro-eagles.webp" },
+        { q: "This stormy mascot calls Richland campus home — and yes, these birds actually swim on the campus's lake.", a: "Thunderducks", aImg: "assets/richland-thunderducks.jpg" },
+        { q: "Eastfield campus's mascot changed from a harvester (the human kind) to this insect in 2017.", a: "Harvester Bee", aImg: "assets/eastfield-bees.jpg" },
+        { q: "This team is named after an equine face marking and represents the North Lake campus, which has a large bronze horse statue dedicated to its mascot.", a: "Blazers", aImg: "assets/north-lake-blazers.png" },
+      ],
+      "Meet the Class": [
+        { q: "More than half of Dallas College students identify with this ethnic group.", a: "Hispanic" },
+        { q: "If you picture a \"typical college student\" as someone living on campus and going to school full-time, this is roughly the percent of your Dallas College students that actually describes.", choices: ["0%", "25%", "50%", "75%"], a: "0%" },
+        { q: "Roughly 3 out of 4 Dallas College students are enrolled this way, meaning most of your students have a lot going on outside your classroom.", a: "Part-time" },
+        { q: "This percentage of Dallas College students are under the age of 18. Many of them are high school students taking classes through a Dual Credit program.", a: "27%" },
+        { q: "Roughly this percentage of our students are food insecure, making campus resources like the food pantry especially valuable.", a: "50%" },
+      ],
+      "Not Just an Org Chart": [
+        { q: "Dallas College faculty are organized broadly into these, then further divided by discipline.", a: "Schools", aImg: "assets/academics-schools-disciplines.png" },
+        { q: "The functional areas of Dallas College are Academics, Student Success, Operations, and Advancement & Innovation. Which functional area are you in? Hint: CETL is in this functional area too!", a: "Academics", aImg: "assets/functional-areas.png" },
+        { q: "If you have questions about your assigned courses, who's the best person to talk to?", a: "Your department chair", aImg: "assets/your-chair.png" },
+        { q: "You've received an important email about Dallas College from our chancellor! What's his name?", a: "Dr. Justin Lonon", aImg: "assets/dr-lonon.webp" },
+        { q: "You'll regularly receive updates about faculty processes and requirements from our provost. What's her name?", a: "Dr. Shawnda Floyd", aImg: "assets/dr-floyd.webp" },
+      ],
+      "Your Mission, Should You Choose to Accept It": [
+        { q: "Dallas College recently became one of only a handful of community colleges in the country to offer this type of degree.", a: "A bachelor's degree" },
+        { q: "One of Dallas College's strategic priorities is \"to create a seamless, supportive experience for students to succeed from enrollment through graduation and career placement,\" summarized in these two alliterative words.", a: "Student Success" },
+        { q: "The purpose of Dallas College is to ensure Dallas County is ___, _______ and ________ ________ for current and future generations.",
+          wof: true,
+          wofContext: "The purpose of Dallas College is to ensure Dallas County is ___ , ___ and ___+___ for current and future generations.",
+          wofPhrase: "vibrant growing economically viable",
+          a: "vibrant, growing, economically viable" },
+        { q: "What are Dallas College's values?",
+          // Hard mode: headings hidden, first letter + letter count only. Use values.png for answer.
+          // TODO: replace qImg with a hard-mode scrambled/hidden values image when available
+          aImg: "assets/values.png" },
+        { q: "What is Dallas College's mission?",
+          jackpot: true,
+          jackpotPhrase: "Transform lives and communities through higher education",
+          a: "Transform lives and communities through higher education" },
+      ],
+    },
+
+    easy: {
+      "Don't Mess with DFW": [
+        { q: "This beloved invention (inspired by a 7-Eleven Slurpee machine) was created in Dallas in 1971 to keep up with demand for a popular cocktail at Tex Mex restaurants.", a: "The frozen margarita machine", aImg: "assets/frozen-marg-machine.webp" },
+        { q: "How many U.S. states have a smaller population than the DFW metro area?", choices: ["3", "17", "38", "45"], a: "38", aImg: "assets/states-less-pop-than-dfw.webp" },
+        { q: "DFW Airport is so large that it has its own zip code — and it's bigger than this entire island.", choices: ["Manhattan", "Rhode Island", "Hawaii", "Puerto Rico"], a: "Manhattan", aImg: "assets/dfw-larger-than-manhattan.jpg" },
+        { q: "DFW ranks this among the most diverse metro areas in the United States.", choices: ["1st", "2nd", "5th", "11th"], a: "5th", aImg: "assets/most-diverse-metros.png" },
+        { q: "DFW is growing at a rate of roughly this many people per day.", choices: ["20", "175", "350", "700"], a: "350" },
+      ],
+      "Know Your Campus Cryptids": [
+        { q: "Cedar Valley campus is represented by a bird-based mascot, though this team name sounds more like a nod to our region's dominant weather.", choices: ["The Thunderstorms", "The Suns", "The Storms", "The Scorchers"], a: "The Suns", aImg: "assets/cv-suns.jpg" },
+        { q: "The El Centro campus mascot is this bird — fitting, since they're often spotted at White Rock Lake.", choices: ["Eagle", "Pelican", "Falcon", "Duck"], a: "Eagle", aImg: "assets/el-centro-eagles.webp" },
+        { q: "This stormy mascot calls Richland campus home — and yes, these birds actually swim on the campus's lake.", choices: ["Lightning Loons", "Thunderducks", "Hail Herons", "Gale Gulls"], a: "Thunderducks", aImg: "assets/richland-thunderducks.jpg" },
+        { q: "Eastfield campus's mascot changed from a harvester (the human kind) to this insect in 2017.", choices: ["Spider", "Ant", "Cicada", "Bee"], a: "Harvester Bee", aImg: "assets/eastfield-bees.jpg" },
+        { q: "This mascot represents the North Lake campus, which has a large bronze horse statue dedicated to its mascot.", choices: ["Broncos", "Blazers", "Stallions", "Colts"], a: "Blazers", aImg: "assets/north-lake-blazers.png" },
+      ],
+      "Meet the Class": [
+        { q: "More than half of Dallas College students identify with this ethnic group.", choices: ["Asian", "Hispanic", "Pacific Islander", "Black"], a: "Hispanic" },
+        { q: "If you picture a \"typical college student\" as someone living on campus and going to school full-time, this is roughly the percent of your Dallas College students that actually describes.", choices: ["0%", "25%", "50%", "75%"], a: "0%" },
+        { q: "Roughly 3 out of 4 Dallas College students are enrolled this way, meaning most of your students have a lot going on outside your classroom.", choices: ["Part-time", "Dual Credit", "Continuing Education", "Early College High School"], a: "Part-time" },
+        { q: "27% of Dallas College students are under the age of 18. What program brings many of them here?", a: "Dual Credit" },
+        { q: "Roughly this percentage of our students are food insecure, making campus resources like the food pantry especially valuable.", choices: ["5%", "15%", "25%", "50%"], a: "50%" },
+      ],
+      "Not Just an Org Chart": [
+        { q: "Dallas College faculty are organized broadly into these, then further divided by discipline.", choices: ["Colleges", "Majors", "Schools", "Departments"], a: "Schools", aImg: "assets/academics-schools-disciplines.png" },
+        { q: "The functional areas of Dallas College are Academics, Student Success, Operations, and Advancement & Innovation. Which functional area are you in? Hint: CETL is in this functional area too!", a: "Academics", aImg: "assets/functional-areas.png" },
+        { q: "If you have questions about your assigned courses, who's the best person to talk to?", choices: ["Academic Scheduling", "Your department chair", "CETL", "E-Learning"], a: "Your department chair", aImg: "assets/your-chair.png" },
+        { q: "You've received an important email about Dallas College from our chancellor! What's his name?", choices: ["Dr. Justin Lonon", "Dr. James London", "Dr. Jack Lonnon", "Dr. Jay Longdon"], a: "Dr. Justin Lonon", aImg: "assets/dr-lonon.webp" },
+        { q: "You'll regularly receive updates about faculty processes and requirements from our provost. What's her name?", choices: ["Dr. Staci Parks", "Dr. Shiwanda Hamilton", "Dr. Sandra Morales", "Dr. Shawnda Floyd"], a: "Dr. Shawnda Floyd", aImg: "assets/dr-floyd.webp" },
+      ],
+      "Your Mission, Should You Choose to Accept It": [
+        { q: "Dallas College recently became one of only a handful of community colleges in the country to offer this type of degree.", choices: ["Associate degree", "Bachelor's degree", "Master's degree", "Doctoral degree"], a: "A bachelor's degree" },
+        { q: "One of Dallas College's strategic priorities is \"to create a seamless, supportive experience for students to succeed from enrollment through graduation and career placement,\" summarized in these alliterative words.", choices: ["Student Success", "Student Support", "Academic Achievement", "Classroom-to-Career"], a: "Student Success" },
+        { q: "The purpose of Dallas College is to ensure Dallas County is ___, _______ and ________ ________ for current and future generations.",
+          wof: true,
+          wofContext: "The purpose of Dallas College is to ensure Dallas County is ___ , ___ and ___+___ for current and future generations.",
+          wofPhrase: "vibrant growing economically viable",
+          a: "vibrant, growing, economically viable" },
+        { q: "What are Dallas College's values?",
+          // Easy mode: headings scrambled. Use values.png for answer.
+          // TODO: replace qImg with an easy-mode scrambled values image when available
+          aImg: "assets/values.png" },
+        { q: "What is Dallas College's mission?",
+          jackpot: true,
+          jackpotPhrase: "Transform lives and communities through higher education",
+          a: "Transform lives and communities through higher education" },
+      ],
+    },
+  };
+
+  // Active question set — populated by mode selection on load
+  let questions = questionBank.hard;
+
+  // ── Teams ─────────────────────────────────────────────────────────────────
+  const teams = [
+    { id: "champy",      name: "Champy",      logo: "assets/Cryptid_Crest_Crest_Champy_Blue.png",      score: 0 },
+    { id: "sasquatch",   name: "Sasquatch",   logo: "assets/Cryptid_Crest_Crest_Sasquatch_Green.png",  score: 0 },
+    { id: "thunderbird", name: "Thunderbird", logo: "assets/Cryptid_Crest_Crest_Thunderbird_Red.png",  score: 0 },
+    { id: "jackalope",   name: "Jackalope",   logo: "assets/Cryptid_Crest_Crest_Jackalope_Yellow.png", score: 0 },
+  ];
+
+  // ── State ─────────────────────────────────────────────────────────────────
+  let currentCard  = null;
+  let isFlipped    = false;
+  let wofRevealed  = new Set(); // letters guessed correctly
+  let wofGuessed   = new Set(); // all guessed letters (hit or miss)
+  const usedCards  = new Set();
+  const pointValues = [100, 200, 300, 400, 500];
+
+  const STORAGE_KEY = 'cetl-jeopardy-state';
+
+  function saveState() {
+    const state = {
+      mode: currentMode,
+      scores: teams.map(t => ({ id: t.id, score: t.score })),
+      usedCards: [...usedCards],
+    };
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return false;
+      const state = JSON.parse(raw);
+      // Restore mode
+      if (state.mode) {
+        currentMode = state.mode;
+        questions = questionBank[state.mode];
+        const badge = document.getElementById('mode-badge');
+        badge.textContent = MODE_LABELS[state.mode].badge;
+        badge.className = `mode-badge ${state.mode}`;
+      }
+      // Restore scores
+      state.scores.forEach(({ id, score }) => {
+        const team = teams.find(t => t.id === id);
+        if (team) team.score = score;
+      });
+      // Restore used cards
+      state.usedCards.forEach(key => usedCards.add(key));
+      return !!state.mode; // returns true if mode was stored
+    } catch(e) { return false; }
+  }
+
+  function resetGame() {
+    if (!confirm('Reset all scores and clear the board? This cannot be undone.')) return;
+    try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
+    teams.forEach(t => t.score = 0);
+    usedCards.clear();
+    currentMode = null;
+    questions = questionBank.hard; // fallback until mode re-selected
+    buildBoard();
+    buildScoreboard();
+    showModeSelector();
+  }
+
+  // ── Build Board ───────────────────────────────────────────────────────────
+  function buildBoard() {
+    const board = document.getElementById('game-board');
+    board.innerHTML = '';
+    categories.forEach(cat => {
+      const h = document.createElement('div');
+      h.className = 'category-header';
+      h.textContent = cat;
+      board.appendChild(h);
+    });
+    pointValues.forEach((pts, rowIdx) => {
+      categories.forEach(cat => {
+        const key  = `${cat}__${rowIdx}`;
+        const card = document.createElement('div');
+        card.className = 'card' + (usedCards.has(key) ? ' used' : '');
+        card.dataset.cat = cat;
+        card.dataset.row = rowIdx;
+        card.innerHTML = `<span class="card-value">$${pts}</span>`;
+        card.addEventListener('click', () => openCard(cat, rowIdx, key));
+        board.appendChild(card);
+      });
+    });
+  }
+
+  // ── Build Scoreboard ──────────────────────────────────────────────────────
+  function buildScoreboard() {
+    const sb = document.getElementById('scoreboard');
+    sb.innerHTML = '';
+    teams.forEach(team => {
+      const card = document.createElement('div');
+      card.className = `score-card ${team.id}`;
+      card.id = `score-card-${team.id}`;
+      card.innerHTML = `
+        <img class="score-logo" src="${team.logo}" alt="${team.name}" />
+        <div class="score-info">
+          <div class="score-team-name">${team.name}</div>
+          <div class="score-points" id="score-${team.id}">${team.score}</div>
+        </div>
+        <div class="score-controls">
+          <button class="score-adj-btn" onclick="manualAdj('${team.id}', 100)">+</button>
+          <button class="score-adj-btn" onclick="manualAdj('${team.id}', -100)">−</button>
+        </div>`;
+      sb.appendChild(card);
+    });
+  }
+
+  // ── Open Card — routes to WoF, Jackpot, or standard flip (optionally via Daily Double) ──
+  function openCard(cat, rowIdx, key) {
+    if (usedCards.has(key)) return;
+    const q = questions[cat][rowIdx];
+    currentCard = { cat, rowIdx, key, points: pointValues[rowIdx] };
+
+    if (q.jackpot) {
+      openJackpot(q, cat, rowIdx);
+    } else if (q.wof) {
+      openWof(q, cat, rowIdx);
+    } else {
+      openFlip(q, cat, rowIdx);
+    }
+  }
+
+  // ── Standard Flip ─────────────────────────────────────────────────────────
+  function openFlip(q, cat, rowIdx) {
+    isFlipped = false;
+    document.getElementById('flip-card').classList.remove('flipped');
+
+    document.getElementById('front-category').textContent = cat;
+    document.getElementById('front-points').textContent   = `$${pointValues[rowIdx]}`;
+
+    const frontQ = document.getElementById('front-question');
+    frontQ.innerHTML = '';
+    if (q.qImg) {
+      const img = document.createElement('img');
+      img.src = q.qImg; img.alt = 'Question image';
+      frontQ.appendChild(img);
+    }
+    if (q.q) {
+      // Detect multiple choice: options stored in q.choices array
+      if (q.choices) {
+        const qText = document.createElement('span');
+        qText.textContent = q.q;
+        frontQ.appendChild(qText);
+        const ol = document.createElement('ol');
+        ol.className = 'mc-list';
+        const labels = ['A', 'B', 'C', 'D'];
+        q.choices.forEach((choice, i) => {
+          const li = document.createElement('li');
+          li.className = 'mc-item';
+          li.innerHTML = `<span class="mc-label">${labels[i]}</span>${choice}`;
+          ol.appendChild(li);
+        });
+        frontQ.appendChild(ol);
+      } else {
+        const span = document.createElement('span');
+        span.textContent = q.q;
+        frontQ.appendChild(span);
+      }
+    }
+
+    // Build back face: image left col + (question repeat + answer) right col
+    const backA = document.getElementById('back-answer');
+    backA.innerHTML = '';
+    const hasImg = !!q.aImg;
+    backA.className = 'face-body' + (hasImg ? '' : ' no-image');
+
+    if (hasImg) {
+      // Image column
+      const imgCol = document.createElement('div');
+      imgCol.className = 'back-image-col';
+      const img = document.createElement('img');
+      img.src = q.aImg; img.alt = 'Answer image';
+      img.className = 'answer-image';
+      imgCol.appendChild(img);
+      backA.appendChild(imgCol);
+
+      // Text column
+      const textCol = document.createElement('div');
+      textCol.className = 'back-text-col';
+      if (q.q) {
+        const qRepeat = document.createElement('div');
+        qRepeat.className = 'back-question-repeat';
+        qRepeat.textContent = q.q;
+        textCol.appendChild(qRepeat);
+      }
+      if (q.a) {
+        const aText = document.createElement('div');
+        aText.className = 'back-answer-text';
+        aText.textContent = q.a;
+        textCol.appendChild(aText);
+      }
+      backA.appendChild(textCol);
+    } else {
+      // No image — centered question repeat + answer
+      if (q.q) {
+        const qRepeat = document.createElement('div');
+        qRepeat.className = 'back-question-repeat';
+        qRepeat.textContent = q.q;
+        backA.appendChild(qRepeat);
+      }
+      if (q.a) {
+        const aText = document.createElement('div');
+        aText.className = 'back-answer-text';
+        aText.textContent = q.a;
+        backA.appendChild(aText);
+      }
+    }
+
+    document.getElementById('btn-flip').style.display = '';
+    document.getElementById('btn-close-pre').style.display = '';
+    document.getElementById('award-row').classList.remove('visible');
+    document.getElementById('modal-overlay').classList.add('active');
+  }
+
+  function flipCard() {
+    if (isFlipped) return;
+    isFlipped = true;
+    document.getElementById('flip-card').classList.add('flipped');
+    document.getElementById('btn-flip').style.display = 'none';
+    document.getElementById('btn-close-pre').style.display = 'none';
+    setTimeout(() => {
+      document.getElementById('award-row').classList.add('visible');
+    }, 500);
+  }
+
+  function closeModal() {
+    if (currentCard) markCardUsed();
+    document.getElementById('modal-overlay').classList.remove('active');
+    currentCard = null;
+    isFlipped   = false;
+  }
+
+  // ── Wheel of Fortune ──────────────────────────────────────────────────────
+  function openWof(q, cat, rowIdx) {
+    wofRevealed = new Set();
+    wofGuessed  = new Set();
+
+    document.getElementById('wof-category').textContent = cat;
+    document.getElementById('wof-points').textContent   = `$${pointValues[rowIdx]}`;
+    document.getElementById('wof-award-row').classList.remove('visible');
+
+    buildWofPhrase(q.wofPhrase, q.wofContext || null);
+    buildWofAlphabet(q.wofPhrase);
+
+    document.getElementById('wof-overlay').classList.add('active');
+  }
+
+  // buildWofPhrase(phrase, context)
+  // phrase: the guessable words only (e.g. "vibrant growing economically viable")
+  // context: optional full sentence with ___ marking where tiles go
+  //   e.g. "Dallas County is ___ , ___ and ___ for current and future generations."
+  //   Each ___ is replaced in order by the words from phrase.
+  // If no context, renders phrase tiles only (original behaviour).
+  function buildWofPhrase(phrase, context) {
+    const container = document.getElementById('wof-phrase');
+    container.innerHTML = '';
+
+    // Helper: render a single word as tiles
+    function makeTileWord(word) {
+      const wordEl = document.createElement('div');
+      wordEl.className = 'wof-word';
+      [...word].forEach(char => {
+        const tile = document.createElement('div');
+        tile.className = 'wof-tile';
+        tile.dataset.char = char.toLowerCase();
+        if (!/[a-zA-Z]/.test(char)) {
+          tile.textContent = char;
+          tile.classList.add('revealed');
+        } else {
+          tile.textContent = char;
+        }
+        wordEl.appendChild(tile);
+      });
+      return wordEl;
+    }
+
+    // Helper: render a plain text token (word or punctuation)
+    function makePlainWord(text) {
+      const span = document.createElement('span');
+      span.className = 'wof-plain-word';
+      span.textContent = text;
+      return span;
+    }
+
+    if (!context) {
+      // No context — render phrase tiles only (original behaviour)
+      phrase.split(' ').forEach(word => container.appendChild(makeTileWord(word)));
+      return;
+    }
+
+    // With context: walk through the context string token by token.
+    // Split on spaces but preserve punctuation attached to words.
+    // Each ___ gets replaced (in order) by the next guessable word's tiles.
+    // A token like "___+___" groups multiple consecutive blanks tightly
+    // together (e.g. "economically viable") so they read as one concept
+    // and stay on the same line.
+    const guessWords = phrase.split(' ');
+    let guessIdx = 0;
+
+    // Tokenise: split on whitespace, keep tokens
+    const tokens = context.split(/(\s+)/);
+    tokens.forEach(token => {
+      if (!token || /^\s+$/.test(token)) return; // skip whitespace tokens
+      if (token === '___') {
+        // Replace with tile word
+        if (guessIdx < guessWords.length) {
+          container.appendChild(makeTileWord(guessWords[guessIdx++]));
+        }
+      } else if (/^(___\+)+___$/.test(token)) {
+        // Grouped blanks — render tightly together in one wrapper
+        const blankCount = token.split('+').length;
+        const group = document.createElement('div');
+        group.className = 'wof-tile-group';
+        for (let i = 0; i < blankCount; i++) {
+          if (guessIdx < guessWords.length) {
+            group.appendChild(makeTileWord(guessWords[guessIdx++]));
+          }
+        }
+        container.appendChild(group);
+      } else {
+        // Plain text token — could have trailing punctuation like "is," or "and"
+        container.appendChild(makePlainWord(token));
+      }
+    });
+  }
+
+  function buildWofAlphabet(phrase) {
+    const container = document.getElementById('wof-alphabet');
+    container.innerHTML = '';
+    // Pre-reveal R, S, T, L, N, E like classic WoF final round? 
+    // Nope — host controls everything, so just show all 26.
+    'abcdefghijklmnopqrstuvwxyz'.split('').forEach(letter => {
+      const btn = document.createElement('button');
+      btn.className = 'wof-letter';
+      btn.textContent = letter.toUpperCase();
+      btn.dataset.letter = letter;
+      btn.addEventListener('click', () => wofGuessLetter(letter, phrase));
+      container.appendChild(btn);
+    });
+  }
+
+  function wofGuessLetter(letter, phrase) {
+    if (wofGuessed.has(letter)) return;
+    wofGuessed.add(letter);
+
+    const btn = document.querySelector(`.wof-letter[data-letter="${letter}"]`);
+    btn.disabled = true;
+
+    const phraseLC = phrase.toLowerCase();
+    if (phraseLC.includes(letter)) {
+      // Hit — reveal all matching tiles
+      btn.classList.add('hit');
+      wofRevealed.add(letter);
+      document.querySelectorAll(`.wof-tile[data-char="${letter}"]`).forEach(tile => {
+        tile.classList.add('revealed', 'flash');
+        // Remove flash class after animation so it can re-trigger if needed
+        tile.addEventListener('animationend', () => tile.classList.remove('flash'), { once: true });
+      });
+    } else {
+      // Miss
+      btn.classList.add('miss');
+    }
+  }
+
+  function wofRevealAll() {
+    // Reveal every unrevealed tile
+    document.querySelectorAll('.wof-tile:not(.revealed)').forEach(tile => {
+      tile.classList.add('revealed', 'flash');
+    });
+    // Disable all remaining letter buttons
+    document.querySelectorAll('.wof-letter:not(:disabled)').forEach(btn => {
+      btn.disabled = true;
+    });
+    // Show award buttons
+    document.getElementById('wof-award-row').classList.add('visible');
+  }
+
+  function closeWof() {
+    if (currentCard) markCardUsed();
+    document.getElementById('wof-overlay').classList.remove('active');
+    currentCard = null;
+  }
+
+  // ── Shared: Award Points ──────────────────────────────────────────────────
+  function awardPoints(teamId) {
+    if (!currentCard) return;
+    const team = teams.find(t => t.id === teamId);
+    team.score += currentCard.points;
+    document.getElementById(`score-${teamId}`).textContent = team.score;
+    const card = document.getElementById(`score-card-${teamId}`);
+    card.classList.remove('pulse');
+    void card.offsetWidth;
+    card.classList.add('pulse');
+    markCardUsed();
+    saveState();
+    // Close whichever modal is open
+    document.getElementById('modal-overlay').classList.remove('active');
+    document.getElementById('wof-overlay').classList.remove('active');
+    document.getElementById('jackpot-overlay').classList.remove('active');
+    currentCard = null;
+    isFlipped   = false;
+  }
+
+  // ── Shared: Manual Adjust ─────────────────────────────────────────────────
+  function manualAdj(teamId, delta) {
+    const team = teams.find(t => t.id === teamId);
+    team.score = Math.max(0, team.score + delta);
+    document.getElementById(`score-${teamId}`).textContent = team.score;
+    saveState();
+  }
+
+  // ── Shared: Mark Used ─────────────────────────────────────────────────────
+  function markCardUsed() {
+    if (!currentCard) return;
+    usedCards.add(currentCard.key);
+    document.querySelectorAll('#game-board .card').forEach(c => {
+      if (c.dataset.cat === currentCard.cat && +c.dataset.row === currentCard.rowIdx) {
+        c.classList.add('used');
+      }
+    });
+    saveState();
+  }
+
+  // Overlay click to close
+  // Overlay clicks intentionally disabled — prevents accidental card dismissal during presentation
+
+  // Keyboard shortcuts — Escape intentionally disabled to prevent accidental dismissal
+  document.addEventListener('keydown', e => {
+    if ((e.key === ' ' || e.key === 'Enter') && currentCard && !isFlipped) {
+      e.preventDefault();
+      flipCard();
+    }
+  });
+
+  // ── Lightbox ─────────────────────────────────────────────────────────────────
+  function openLightbox(src) {
+    const lb = document.getElementById('lightbox');
+    document.getElementById('lightbox-img').src = src;
+    lb.classList.add('active');
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+  }
+
+  // Wire up lightbox on any img inside flip faces or wof card (delegated)
+  document.addEventListener('click', function(e) {
+    if (e.target.matches('.flip-face img, .wof-card img')) {
+      openLightbox(e.target.src);
+    }
+  });
+
+  // Escape closes lightbox only (not the card modals)
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeLightbox();
+  });
+
+
+
+  // ── Mode Selection ───────────────────────────────────────────────────────────
+  let currentMode = null; // 'easy' | 'hard'
+
+  const MODE_LABELS = {
+    easy: { badge: '🌱 First Sighting', short: 'First Sighting' },
+    hard: { badge: '🔥 True Believer',  short: 'True Believer'  },
+  };
+
+  function selectMode(mode) {
+    currentMode = mode;
+    questions = questionBank[mode];
+
+    // Update header badge
+    const badge = document.getElementById('mode-badge');
+    badge.textContent = MODE_LABELS[mode].badge;
+    badge.className = `mode-badge ${mode}`;
+
+    // Hide selector
+    document.getElementById('mode-overlay').classList.remove('active');
+
+    // Save mode, then init board
+    saveState();
+    buildBoard();
+    buildScoreboard();
+  }
+
+  function showModeSelector() {
+    document.getElementById('mode-overlay').classList.add('active');
+  }
+
+  // ── Jackalope Jackpot ─────────────────────────────────────────────────────
+  let jpGuessCount  = 0;
+  let jpGuessed     = new Set();
+  let jpStolen      = false;
+  const JP_MAX      = 9;
+  const JP_LAYERS   = ['jl-1','jl-2','jl-3','jl-4','jl-5','jl-6','jl-7','jl-8','jl-9'];
+
+  function openJackpot(q, cat, rowIdx) {
+    jpGuessCount = 0;
+    jpGuessed    = new Set();
+    jpStolen     = false;
+
+    document.getElementById('jackpot-category').textContent = cat;
+    document.getElementById('jackpot-points').textContent   = `$${pointValues[rowIdx]}`;
+    document.getElementById('jackpot-award-row').classList.remove('visible');
+    document.getElementById('jackpot-solve-prompt').classList.remove('visible');
+
+    // Reset all layers
+    JP_LAYERS.forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.remove('visible');
+    });
+    // Reset canvas animation
+    const canvas = document.getElementById('jackpot-canvas');
+    canvas.classList.remove('animating');
+    canvas.style.opacity = '';
+
+    buildJackpotPhrase(q.jackpotPhrase);
+    buildJackpotAlphabet(q.jackpotPhrase);
+
+    document.getElementById('jackpot-overlay').classList.add('active');
+  }
+
+  function buildJackpotPhrase(phrase) {
+    const container = document.getElementById('jackpot-phrase');
+    container.innerHTML = '';
+    phrase.split(' ').forEach(word => {
+      const wordEl = document.createElement('div');
+      wordEl.className = 'jackpot-word';
+      [...word].forEach(char => {
+        const tile = document.createElement('div');
+        tile.className = 'jackpot-tile';
+        tile.dataset.char = char.toLowerCase();
+        tile.textContent = char;
+        if (!/[a-zA-Z]/.test(char)) tile.classList.add('revealed');
+        wordEl.appendChild(tile);
+      });
+      container.appendChild(wordEl);
+    });
+  }
+
+  function buildJackpotAlphabet(phrase) {
+    const container = document.getElementById('jackpot-alphabet');
+    container.innerHTML = '';
+    'abcdefghijklmnopqrstuvwxyz'.split('').forEach(letter => {
+      const btn = document.createElement('button');
+      btn.className = 'jackpot-letter';
+      btn.textContent = letter.toUpperCase();
+      btn.dataset.letter = letter;
+      btn.addEventListener('click', () => jackpotGuessLetter(letter, phrase));
+      container.appendChild(btn);
+    });
+  }
+
+  function jackpotGuessLetter(letter, phrase) {
+    if (jpGuessed.has(letter) || jpStolen) return;
+    jpGuessed.add(letter);
+
+    const btn = document.querySelector(`.jackpot-letter[data-letter="${letter}"]`);
+    btn.disabled = true;
+
+    const phraseLC = phrase.toLowerCase();
+    if (phraseLC.includes(letter)) {
+      btn.classList.add('hit');
+      // Reveal matching tiles
+      document.querySelectorAll(`.jackpot-tile[data-char="${letter}"]`).forEach(tile => {
+        tile.classList.add('revealed', 'flash');
+        tile.addEventListener('animationend', () => tile.classList.remove('flash'), { once: true });
+      });
+    } else {
+      btn.classList.add('miss');
+    }
+
+    // Increment guess count and reveal next layer
+    jpGuessCount++;
+    if (jpGuessCount <= JP_MAX) {
+      const layer = document.getElementById(JP_LAYERS[jpGuessCount - 1]);
+      if (layer) layer.classList.add('visible');
+    }
+
+    // Jackpot triggered at 9 guesses!
+    if (jpGuessCount === JP_MAX) {
+      triggerJackpot(phrase);
+    }
+  }
+
+  function triggerJackpot(phrase) {
+    jpStolen = true;
+
+    // Lock all remaining alphabet buttons
+    document.querySelectorAll('.jackpot-letter:not(:disabled)').forEach(btn => {
+      btn.disabled = true;
+      btn.classList.add('locked');
+    });
+
+    // Animate jackalope bouncing off screen after a short delay
+    setTimeout(() => {
+      const canvas = document.getElementById('jackpot-canvas');
+      canvas.classList.add('animating');
+
+      // After animation: hide canvas, steal unrevealed tiles, show solve prompt
+      canvas.addEventListener('animationend', () => {
+        canvas.style.opacity = '0';
+
+        // "Steal" unrevealed tiles
+        document.querySelectorAll('.jackpot-tile:not(.revealed)').forEach(tile => {
+          tile.classList.add('stolen');
+        });
+
+        // Show solve prompt
+        document.getElementById('jackpot-solve-prompt').classList.add('visible');
+      }, { once: true });
+    }, 600);
+  }
+
+  function jackpotRevealAll() {
+    // Reveal all tiles
+    document.querySelectorAll('.jackpot-tile').forEach(tile => {
+      tile.classList.remove('stolen');
+      tile.classList.add('revealed');
+    });
+    // Lock alphabet
+    document.querySelectorAll('.jackpot-letter:not(:disabled)').forEach(btn => {
+      btn.disabled = true;
+    });
+    // Put the jackalope back in his box — undo the bounce/slide animation
+    const canvas = document.getElementById('jackpot-canvas');
+    canvas.classList.remove('animating');
+    canvas.style.opacity = '1';
+    JP_LAYERS.forEach(id => document.getElementById(id).classList.add('visible'));
+
+    document.getElementById('jackpot-award-row').classList.add('visible');
+  }
+
+  function closeJackpot() {
+    if (currentCard) markCardUsed();
+    document.getElementById('jackpot-overlay').classList.remove('active');
+    currentCard = null;
+  }
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  const hadSavedMode = loadState();
+  if (hadSavedMode) {
+    // Mode was saved — go straight to the board
+    document.getElementById('mode-overlay').classList.remove('active');
+    buildBoard();
+    buildScoreboard();
+  }
+  // If no saved mode, mode-overlay stays active (already .active in HTML)
+</script>
+
+<!-- ── Jackalope Jackpot Modal ── -->
+<div class="jackpot-overlay" id="jackpot-overlay">
+  <div class="jackpot-card">
+    <div class="jackpot-header">
+      <div class="jackpot-tag" id="jackpot-category">Category</div>
+      <div class="jackpot-points" id="jackpot-points">$400</div>
+    </div>
+    <div class="jackpot-question">What is Dallas College's mission?</div>
+    <div class="jackpot-body">
+      <!-- Left: Jackalope canvas -->
+      <div class="jackpot-canvas" id="jackpot-canvas">
+        <img class="jackpot-layer" id="jl-1" src="assets/1-tail.png"        alt="tail" />
+        <img class="jackpot-layer" id="jl-2" src="assets/2-feet.png"        alt="feet" />
+        <img class="jackpot-layer" id="jl-3" src="assets/3-haunches.png"    alt="haunches" />
+        <img class="jackpot-layer" id="jl-4" src="assets/4-front-arm.png"   alt="front arm" />
+        <img class="jackpot-layer" id="jl-5" src="assets/5-behind-arm.png"  alt="behind arm" />
+        <img class="jackpot-layer" id="jl-6" src="assets/6-head.png"        alt="head" />
+        <img class="jackpot-layer" id="jl-7" src="assets/7-ear.png"         alt="ear" />
+        <img class="jackpot-layer" id="jl-8" src="assets/8-right-antler.png" alt="right antler" />
+        <img class="jackpot-layer" id="jl-9" src="assets/9-left-antler.png"  alt="left antler" />
+      </div>
+      <!-- Right: phrase + alphabet + actions -->
+      <div class="jackpot-right">
+        <div class="jackpot-phrase" id="jackpot-phrase"></div>
+        <div class="jackpot-solve-prompt" id="jackpot-solve-prompt">
+          The Jackalope stole your letters! Time to solve!
+        </div>
+        <div class="jackpot-alphabet" id="jackpot-alphabet"></div>
+        <div class="jackpot-actions">
+          <button class="btn-jackpot-reveal" onclick="jackpotRevealAll()">Reveal Answer</button>
+          <button class="btn-jackpot-close"  onclick="closeJackpot()">Close (No Award)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Award row -->
+  <div class="jackpot-award-row" id="jackpot-award-row">
+    <div class="award-label">Award Points To:</div>
+    <button class="btn-team champy"      onclick="awardPoints('champy')"><img src="assets/Cryptid_Crest_Crest_Champy_Blue.png" alt="Champy" /> Champy</button>
+    <button class="btn-team sasquatch"   onclick="awardPoints('sasquatch')"><img src="assets/Cryptid_Crest_Crest_Sasquatch_Green.png" alt="Sasquatch" /> Sasquatch</button>
+    <button class="btn-team thunderbird" onclick="awardPoints('thunderbird')"><img src="assets/Cryptid_Crest_Crest_Thunderbird_Red.png" alt="Thunderbird" /> Thunderbird</button>
+    <button class="btn-team jackalope"   onclick="awardPoints('jackalope')"><img src="assets/Cryptid_Crest_Crest_Jackalope_Yellow.png" alt="Jackalope" /> Jackalope</button>
+  </div>
+</div>
+
+
+<!-- ── Jackalope Jackpot Modal ── -->
+<div class="jackpot-overlay" id="jackpot-overlay">
+  <div class="jackpot-card">
+    <div class="jackpot-header">
+      <div class="jackpot-tag" id="jackpot-category">Category</div>
+      <div class="jackpot-points" id="jackpot-points">$400</div>
+    </div>
+    <div class="jackpot-question">What is Dallas College's mission?</div>
+    <div class="jackpot-body">
+      <!-- Left: Jackalope canvas -->
+      <div class="jackpot-canvas" id="jackpot-canvas">
+        <img class="jackpot-layer" id="jl-1" src="assets/1-tail.png"        alt="tail" />
+        <img class="jackpot-layer" id="jl-2" src="assets/2-feet.png"        alt="feet" />
+        <img class="jackpot-layer" id="jl-3" src="assets/3-haunches.png"    alt="haunches" />
+        <img class="jackpot-layer" id="jl-4" src="assets/4-front-arm.png"   alt="front arm" />
+        <img class="jackpot-layer" id="jl-5" src="assets/5-behind-arm.png"  alt="behind arm" />
+        <img class="jackpot-layer" id="jl-6" src="assets/6-head.png"        alt="head" />
+        <img class="jackpot-layer" id="jl-7" src="assets/7-ear.png"         alt="ear" />
+        <img class="jackpot-layer" id="jl-8" src="assets/8-right-antler.png" alt="right antler" />
+        <img class="jackpot-layer" id="jl-9" src="assets/9-left-antler.png"  alt="left antler" />
+      </div>
+      <!-- Right: phrase + alphabet + actions -->
+      <div class="jackpot-right">
+        <div class="jackpot-phrase" id="jackpot-phrase"></div>
+        <div class="jackpot-solve-prompt" id="jackpot-solve-prompt">
+          The Jackalope stole your letters! Time to solve!
+        </div>
+        <div class="jackpot-alphabet" id="jackpot-alphabet"></div>
+        <div class="jackpot-actions">
+          <button class="btn-jackpot-reveal" onclick="jackpotRevealAll()">Reveal Answer</button>
+          <button class="btn-jackpot-close"  onclick="closeJackpot()">Close (No Award)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Award row -->
+  <div class="jackpot-award-row" id="jackpot-award-row">
+    <div class="award-label">Award Points To:</div>
+    <button class="btn-team champy"      onclick="awardPoints('champy')"><img src="assets/Cryptid_Crest_Crest_Champy_Blue.png" alt="Champy" /> Champy</button>
+    <button class="btn-team sasquatch"   onclick="awardPoints('sasquatch')"><img src="assets/Cryptid_Crest_Crest_Sasquatch_Green.png" alt="Sasquatch" /> Sasquatch</button>
+    <button class="btn-team thunderbird" onclick="awardPoints('thunderbird')"><img src="assets/Cryptid_Crest_Crest_Thunderbird_Red.png" alt="Thunderbird" /> Thunderbird</button>
+    <button class="btn-team jackalope"   onclick="awardPoints('jackalope')"><img src="assets/Cryptid_Crest_Crest_Jackalope_Yellow.png" alt="Jackalope" /> Jackalope</button>
+  </div>
+</div>
+
+
+
+<!-- ── Lightbox ── -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()" title="Close">✕</button>
+  <img id="lightbox-img" src="" alt="Enlarged image" onclick="event.stopPropagation()" />
+</div>
+
+</body>
+</html>
