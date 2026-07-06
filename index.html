@@ -418,11 +418,7 @@
     }
     .btn-team:hover  { transform: translateY(-2px); filter: brightness(1.15); }
     .btn-team:active { transform: scale(0.96); }
-    .btn-team img { width: 30px; height: 30px; object-fit: contain; }
-    .btn-team.champy      { background: var(--team-champy);     color: #fff; box-shadow: 0 3px 12px rgba(30,142,247,0.4); }
-    .btn-team.sasquatch   { background: var(--team-sasquatch);  color: #fff; box-shadow: 0 3px 12px rgba(48,156,63,0.4); }
-    .btn-team.thunderbird { background: var(--team-thunderbird);color: #fff; box-shadow: 0 3px 12px rgba(229,38,38,0.4); }
-    .btn-team.jackalope   { background: var(--team-jackalope);  color: var(--dc-blue-dark); box-shadow: 0 3px 12px rgba(245,197,24,0.4); }
+    /* Team colors are applied inline from team config */
     .action-row { display: flex; gap: 12px; width: 100%; }
 
     /* ════════════════════════════════════════
@@ -628,22 +624,18 @@
       background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 70%);
       pointer-events: none;
     }
-    .score-card.champy      { background: var(--team-champy);     box-shadow: 0 4px 16px rgba(30,142,247,0.3); }
-    .score-card.sasquatch   { background: var(--team-sasquatch);  box-shadow: 0 4px 16px rgba(48,156,63,0.3); }
-    .score-card.thunderbird { background: var(--team-thunderbird);box-shadow: 0 4px 16px rgba(229,38,38,0.3); }
-    .score-card.jackalope   { background: var(--team-jackalope);  box-shadow: 0 4px 16px rgba(245,197,24,0.3); }
     .score-card.pulse { animation: scorePulse 0.5s ease-out; }
     @keyframes scorePulse {
       0%   { transform: scale(1); }
       40%  { transform: scale(1.06); }
       100% { transform: scale(1); }
     }
-    .score-logo { width: 48px; height: 48px; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+    .score-swatch { width: 14px; align-self: stretch; border-radius: 4px; flex-shrink: 0; background: rgba(0,0,0,0.25); }
     .score-info { flex: 1; }
     .score-team-name { font-size: 0.62rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.9); line-height: 1; margin-bottom: 2px; }
-    .score-card.jackalope .score-team-name { color: rgba(0,25,80,0.9); }
+
     .score-points { font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: 900; color: #fff; line-height: 1; text-shadow: 0 2px 6px rgba(0,0,0,0.3); }
-    .score-card.jackalope .score-points { color: var(--dc-blue-dark); }
+
     .score-controls { display: flex; flex-direction: column; gap: 4px; }
     .score-adj-btn {
       width: 24px; height: 24px; border-radius: 4px; border: none;
@@ -651,7 +643,7 @@
       cursor: pointer; display: flex; align-items: center; justify-content: center;
       line-height: 1; transition: background 0.1s; font-family: 'Montserrat', sans-serif;
     }
-    .score-card.jackalope .score-adj-btn { color: var(--dc-blue-dark); }
+
     .score-adj-btn:hover { background: rgba(0,0,0,0.35); }
 
     .game-footer {
@@ -731,299 +723,6 @@
     /* Clickable image cursor hint */
     .answer-image, .flip-front .face-body img, .wof-phrase img {
       cursor: zoom-in;
-    }
-
-    /* ════════════════════════════════════════
-       JACKALOPE JACKPOT MODAL
-    ════════════════════════════════════════ */
-    .jackpot-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.92);
-      z-index: 100;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      backdrop-filter: blur(4px);
-      flex-direction: column;
-      gap: 12px;
-    }
-    .jackpot-overlay.active { display: flex; }
-
-    .jackpot-card {
-      width: 100%;
-      max-width: 900px;
-      background: #fff;
-      border: 3px solid #000;
-      border-radius: 12px;
-      padding: 20px 24px;
-      box-shadow: 0 0 0 6px #fff, 0 0 0 9px #000, 0 24px 60px rgba(0,0,0,0.7);
-      color: #000;
-    }
-
-    .jackpot-header {
-      display: flex;
-      align-items: baseline;
-      gap: 12px;
-      margin-bottom: 14px;
-      border-bottom: 2px solid #000;
-      padding-bottom: 10px;
-    }
-    .jackpot-tag {
-      font-size: 0.7rem;
-      font-weight: 900;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: #000;
-    }
-    .jackpot-points {
-      font-size: 1.6rem;
-      font-weight: 900;
-      color: #000;
-      line-height: 1;
-    }
-    .jackpot-guess-count {
-      margin-left: auto;
-      font-size: 0.75rem;
-      font-weight: 800;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #555;
-    }
-    .jackpot-guess-count span {
-      color: #000;
-      font-size: 1.1rem;
-    }
-
-    /* Main content: jackalope left, phrase+alphabet right */
-    .jackpot-body {
-      display: flex;
-      gap: 20px;
-      align-items: flex-start;
-    }
-
-    /* Jackalope canvas */
-    .jackpot-canvas {
-      flex: 0 0 220px;
-      width: 220px;
-      height: 280px;
-      position: relative;
-      border: 2px solid #ddd;
-      border-radius: 8px;
-      background: #fafafa;
-      overflow: hidden;
-      flex-shrink: 0;
-    }
-    .jackpot-layer {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      opacity: 0;
-      transition: opacity 0.4s ease;
-    }
-    .jackpot-layer.visible { opacity: 1; }
-
-    /* Jackpot animation — jackalope bounces then all layers fade */
-    @keyframes jackpotBounce {
-      0%   { transform: translateX(0) rotate(0deg); }
-      15%  { transform: translateX(-8px) rotate(-3deg); }
-      30%  { transform: translateX(12px) rotate(3deg); }
-      45%  { transform: translateX(-10px) rotate(-2deg); }
-      60%  { transform: translateX(16px) rotate(2deg); }
-      75%  { transform: translateX(-6px) rotate(-1deg); }
-      90%  { transform: translateX(8px) rotate(1deg); }
-      100% { transform: translateX(200px) rotate(15deg); }
-    }
-    .jackpot-canvas.animating {
-      animation: jackpotBounce 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-    }
-
-    /* Right side: phrase + alphabet */
-    .jackpot-right {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      min-width: 0;
-    }
-
-    /* Phrase tiles — b&w style */
-    .jackpot-phrase {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px 20px;
-      align-items: flex-end;
-    }
-    .jackpot-word {
-      display: flex;
-      gap: 3px;
-    }
-    .jackpot-tile {
-      width: 26px;
-      height: 34px;
-      border: 2px solid #000;
-      border-radius: 3px;
-      background: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      font-weight: 900;
-      color: transparent;
-      text-transform: uppercase;
-      font-family: 'Montserrat', sans-serif;
-      transition: color 0.2s, background 0.2s;
-    }
-    .jackpot-tile.revealed {
-      color: #000;
-      background: #f5f5f5;
-    }
-    .jackpot-tile.flash {
-      animation: jackpotTileFlash 0.35s ease-out;
-    }
-    @keyframes jackpotTileFlash {
-      0%   { background: #000; color: #fff; }
-      100% { background: #f5f5f5; color: #000; }
-    }
-    /* Stolen tiles — grey out when jackpot triggers */
-    .jackpot-tile.stolen {
-      background: #eee;
-      border-color: #bbb;
-      color: transparent !important;
-    }
-    /* Plain words in phrase */
-    .jackpot-plain-word {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: #000;
-      padding-bottom: 3px;
-      font-family: 'Montserrat', sans-serif;
-    }
-
-    /* Alphabet */
-    .jackpot-alphabet {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
-    .jackpot-letter {
-      width: 32px;
-      height: 32px;
-      border: 2px solid #000;
-      border-radius: 4px;
-      background: #fff;
-      color: #000;
-      font-family: 'Montserrat', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 800;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-transform: uppercase;
-      transition: background 0.1s, color 0.1s;
-    }
-    .jackpot-letter:hover:not(:disabled) {
-      background: #000;
-      color: #fff;
-    }
-    .jackpot-letter:disabled { cursor: default; }
-    .jackpot-letter.hit  { background: #000; color: #fff; border-color: #000; opacity: 1 !important; }
-    .jackpot-letter.miss { background: #ddd; color: #999; border-color: #bbb; opacity: 1 !important; }
-
-    /* Stolen state: alphabet locks */
-    .jackpot-letter.locked {
-      background: #eee;
-      color: #bbb;
-      border-color: #ccc;
-      cursor: default;
-    }
-
-    /* Actions */
-    .jackpot-question {
-      font-size: clamp(1rem, 2vw, 1.2rem);
-      font-weight: 700;
-      color: #000;
-      margin-bottom: 14px;
-    }
-    .jackpot-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 4px;
-    }
-    .btn-jackpot-reveal {
-      background: #000;
-      color: #fff;
-      font-family: 'Montserrat', sans-serif;
-      font-weight: 700;
-      font-size: 0.85rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      border: none;
-      border-radius: 6px;
-      padding: 11px 20px;
-      cursor: pointer;
-      flex: 1;
-      transition: background 0.1s;
-    }
-    .btn-jackpot-reveal:hover { background: #333; }
-    .btn-jackpot-close {
-      background: #fff;
-      color: #000;
-      border: 2px solid #000;
-      font-family: 'Montserrat', sans-serif;
-      font-weight: 700;
-      font-size: 0.85rem;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      border-radius: 6px;
-      padding: 11px 20px;
-      cursor: pointer;
-      transition: background 0.1s;
-    }
-    .btn-jackpot-close:hover { background: #f0f0f0; }
-
-    /* Solve prompt that appears after jackpot triggers */
-    .jackpot-solve-prompt {
-      display: none;
-      font-size: 0.85rem;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: #000;
-      text-align: center;
-      padding: 8px;
-      border: 2px dashed #000;
-      border-radius: 6px;
-      animation: solvePromptIn 0.4s ease-out;
-    }
-    .jackpot-solve-prompt.visible { display: block; }
-    @keyframes solvePromptIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to   { opacity: 1; transform: scale(1); }
-    }
-
-    /* Award row for jackpot — white background */
-    .jackpot-award-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s ease;
-      width: 100%;
-      max-width: 900px;
-    }
-    .jackpot-award-row.visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .jackpot-award-row .award-label {
-      color: #fff;
     }
 
     /* ════════════════════════════════════════
@@ -1488,6 +1187,164 @@
       color: #ff8888;
       border: 1px solid rgba(229,38,38,0.4);
     }
+
+    /* ════════════════════════════════════════
+       TEAM SETUP (count + names/colors)
+    ════════════════════════════════════════ */
+    .setup-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: var(--dc-blue-dark);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 28px;
+      padding: 24px;
+      overflow-y: auto;
+    }
+    .setup-overlay.active { display: flex; }
+
+    .setup-header { text-align: center; }
+    .setup-header h2 {
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--gold);
+      text-shadow: 0 0 30px rgba(245,197,24,0.4);
+      line-height: 1.1;
+    }
+    .setup-header p {
+      font-size: clamp(0.8rem, 1.8vw, 1rem);
+      font-weight: 600;
+      color: rgba(255,255,255,0.6);
+      margin-top: 8px;
+    }
+
+    /* Team count buttons */
+    .count-options {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .count-btn {
+      width: 90px;
+      height: 90px;
+      border-radius: 14px;
+      background: var(--dc-blue);
+      border: 3px solid rgba(245,197,24,0.4);
+      color: var(--gold);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+    }
+    .count-btn:hover {
+      transform: translateY(-4px);
+      border-color: var(--gold);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.4), 0 0 0 2px var(--gold);
+    }
+    .count-btn:active { transform: scale(0.96); }
+
+    /* Team config rows */
+    .team-config-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+      max-width: 620px;
+    }
+    .team-config-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      background: var(--dc-blue);
+      border: 2px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 14px 16px;
+      flex-wrap: wrap;
+    }
+    .team-config-num {
+      font-size: 0.75rem;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      width: 60px;
+      flex-shrink: 0;
+    }
+    .team-name-input {
+      flex: 1;
+      min-width: 160px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 2px solid rgba(255,255,255,0.15);
+      background: var(--dc-blue-dark);
+      color: var(--white);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .team-name-input:focus { border-color: var(--gold); }
+    .team-name-input::placeholder { color: rgba(255,255,255,0.3); }
+
+    .color-swatches {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .color-swatch {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: transform 0.12s, border-color 0.12s, opacity 0.12s;
+      padding: 0;
+    }
+    .color-swatch:hover { transform: scale(1.15); }
+    .color-swatch.selected {
+      border-color: #fff;
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.4), 0 0 12px rgba(255,255,255,0.4);
+    }
+    .color-swatch.taken {
+      opacity: 0.25;
+      cursor: not-allowed;
+    }
+
+    .setup-start-btn {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: var(--gold);
+      color: var(--dc-blue-dark);
+      border: none;
+      border-radius: 10px;
+      padding: 16px 48px;
+      cursor: pointer;
+      box-shadow: 0 6px 24px rgba(245,197,24,0.4);
+      transition: transform 0.15s, filter 0.15s;
+    }
+    .setup-start-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+    .setup-start-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .setup-error {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #ff8888;
+      min-height: 1.2em;
+    }
   </style>
 </head>
 <body>
@@ -1515,6 +1372,32 @@
         <button class="mode-card-btn">Start — True Believer</button>
       </div>
     </div>
+  </div>
+
+  <!-- ── Team Count Selector ── -->
+  <div class="setup-overlay" id="count-overlay">
+    <div class="setup-header">
+      <h2>How Many Teams?</h2>
+      <p>Choose the number of teams playing today.</p>
+    </div>
+    <div class="count-options">
+      <button class="count-btn" onclick="selectTeamCount(2)">2</button>
+      <button class="count-btn" onclick="selectTeamCount(3)">3</button>
+      <button class="count-btn" onclick="selectTeamCount(4)">4</button>
+      <button class="count-btn" onclick="selectTeamCount(5)">5</button>
+      <button class="count-btn" onclick="selectTeamCount(6)">6</button>
+    </div>
+  </div>
+
+  <!-- ── Team Names & Colors ── -->
+  <div class="setup-overlay" id="team-overlay">
+    <div class="setup-header">
+      <h2>Name Your Teams</h2>
+      <p>Give each team a name and pick a color.</p>
+    </div>
+    <div class="team-config-list" id="team-config-list"></div>
+    <div class="setup-error" id="setup-error"></div>
+    <button class="setup-start-btn" id="setup-start-btn" onclick="startGame()">Start Game</button>
   </div>
 
   <header class="game-header">
@@ -1552,12 +1435,7 @@
       <button class="btn btn-close" id="btn-close-pre" onclick="closeModal()">Close (No Award)</button>
     </div>
     <div class="award-row" id="award-row">
-      <div class="award-label">Award Points To:</div>
-      <button class="btn-team champy"      onclick="awardPoints('champy')"><img src="assets/Cryptid_Crest_Crest_Champy_Blue.png" alt="Champy" /> Champy</button>
-      <button class="btn-team sasquatch"   onclick="awardPoints('sasquatch')"><img src="assets/Cryptid_Crest_Crest_Sasquatch_Green.png" alt="Sasquatch" /> Sasquatch</button>
-      <button class="btn-team thunderbird" onclick="awardPoints('thunderbird')"><img src="assets/Cryptid_Crest_Crest_Thunderbird_Red.png" alt="Thunderbird" /> Thunderbird</button>
-      <button class="btn-team jackalope"   onclick="awardPoints('jackalope')"><img src="assets/Cryptid_Crest_Crest_Jackalope_Yellow.png" alt="Jackalope" /> Jackalope</button>
-      <button class="btn btn-close" onclick="closeModal()">Close</button>
+      <!-- Team buttons populated dynamically; Close button re-appended after -->
     </div>
   </div>
 </div>
@@ -1581,11 +1459,7 @@
   </div>
   <!-- Award row appears after reveal -->
   <div class="wof-award-row" id="wof-award-row">
-    <div class="award-label">Award Points To:</div>
-    <button class="btn-team champy"      onclick="awardPoints('champy')"><img src="assets/Cryptid_Crest_Crest_Champy_Blue.png" alt="Champy" /> Champy</button>
-    <button class="btn-team sasquatch"   onclick="awardPoints('sasquatch')"><img src="assets/Cryptid_Crest_Crest_Sasquatch_Green.png" alt="Sasquatch" /> Sasquatch</button>
-    <button class="btn-team thunderbird" onclick="awardPoints('thunderbird')"><img src="assets/Cryptid_Crest_Crest_Thunderbird_Red.png" alt="Thunderbird" /> Thunderbird</button>
-    <button class="btn-team jackalope"   onclick="awardPoints('jackalope')"><img src="assets/Cryptid_Crest_Crest_Jackalope_Yellow.png" alt="Jackalope" /> Jackalope</button>
+    <!-- Populated dynamically from team config -->
   </div>
 </div>
 
@@ -1713,12 +1587,26 @@
   let questions = questionBank.hard;
 
   // ── Teams ─────────────────────────────────────────────────────────────────
-  const teams = [
-    { id: "champy",      name: "Champy",      logo: "assets/Cryptid_Crest_Crest_Champy_Blue.png",      score: 0 },
-    { id: "sasquatch",   name: "Sasquatch",   logo: "assets/Cryptid_Crest_Crest_Sasquatch_Green.png",  score: 0 },
-    { id: "thunderbird", name: "Thunderbird", logo: "assets/Cryptid_Crest_Crest_Thunderbird_Red.png",  score: 0 },
-    { id: "jackalope",   name: "Jackalope",   logo: "assets/Cryptid_Crest_Crest_Jackalope_Yellow.png", score: 0 },
+  // Populated dynamically during setup: { id, name, color, score }
+  let teams = [];
+
+  // Available team colors (from the CETL palette)
+  const TEAM_COLORS = [
+    { hex: "#1E8EF7", name: "Blue"   },
+    { hex: "#309C3F", name: "Green"  },
+    { hex: "#E52626", name: "Red"    },
+    { hex: "#F5C518", name: "Gold"   },
+    { hex: "#93278F", name: "Purple" },
+    { hex: "#FF620B", name: "Orange" },
   ];
+
+  // Light colors that need dark text for contrast
+  function textColorFor(hex) {
+    const h = hex.replace("#", "");
+    const r = parseInt(h.substr(0,2), 16), g = parseInt(h.substr(2,2), 16), b = parseInt(h.substr(4,2), 16);
+    const lum = 0.299*r + 0.587*g + 0.114*b;
+    return lum > 160 ? "#001a52" : "#ffffff";
+  }
 
   // ── State ─────────────────────────────────────────────────────────────────
   let currentCard  = null;
@@ -1733,7 +1621,7 @@
   function saveState() {
     const state = {
       mode: currentMode,
-      scores: teams.map(t => ({ id: t.id, score: t.score })),
+      teams: teams.map(t => ({ id: t.id, name: t.name, color: t.color, score: t.score })),
       usedCards: [...usedCards],
     };
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
@@ -1752,26 +1640,29 @@
         badge.textContent = MODE_LABELS[state.mode].badge;
         badge.className = `mode-badge ${state.mode}`;
       }
-      // Restore scores
-      state.scores.forEach(({ id, score }) => {
-        const team = teams.find(t => t.id === id);
-        if (team) team.score = score;
-      });
+      // Restore teams (names, colors, scores)
+      if (state.teams && state.teams.length) {
+        teams = state.teams.map(t => ({ ...t }));
+      }
       // Restore used cards
       state.usedCards.forEach(key => usedCards.add(key));
-      return !!state.mode; // returns true if mode was stored
+      // Resumable only if we have both a mode and a team config
+      return !!(state.mode && state.teams && state.teams.length);
     } catch(e) { return false; }
   }
 
   function resetGame() {
     if (!confirm('Reset all scores and clear the board? This cannot be undone.')) return;
     try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
-    teams.forEach(t => t.score = 0);
+    teams = [];
     usedCards.clear();
     currentMode = null;
     questions = questionBank.hard; // fallback until mode re-selected
+    document.getElementById('scoreboard').innerHTML = '';
     buildBoard();
-    buildScoreboard();
+    // Hide any setup overlays that might be open, then show mode selector
+    document.getElementById('count-overlay').classList.remove('active');
+    document.getElementById('team-overlay').classList.remove('active');
     showModeSelector();
   }
 
@@ -1803,21 +1694,70 @@
   function buildScoreboard() {
     const sb = document.getElementById('scoreboard');
     sb.innerHTML = '';
+    // Adjust grid columns to team count
+    sb.style.gridTemplateColumns = `repeat(${Math.min(teams.length, 6)}, 1fr)`;
     teams.forEach(team => {
+      const txt = textColorFor(team.color);
       const card = document.createElement('div');
-      card.className = `score-card ${team.id}`;
+      card.className = 'score-card';
       card.id = `score-card-${team.id}`;
+      card.style.background = team.color;
       card.innerHTML = `
-        <img class="score-logo" src="${team.logo}" alt="${team.name}" />
+        <div class="score-swatch"></div>
         <div class="score-info">
-          <div class="score-team-name">${team.name}</div>
-          <div class="score-points" id="score-${team.id}">${team.score}</div>
+          <div class="score-team-name" style="color:${txt === '#ffffff' ? 'rgba(255,255,255,0.9)' : 'rgba(0,25,80,0.9)'}">${escapeHtml(team.name)}</div>
+          <div class="score-points" id="score-${team.id}" style="color:${txt}">${team.score}</div>
         </div>
         <div class="score-controls">
-          <button class="score-adj-btn" onclick="manualAdj('${team.id}', 100)">+</button>
-          <button class="score-adj-btn" onclick="manualAdj('${team.id}', -100)">−</button>
+          <button class="score-adj-btn" style="color:${txt}" onclick="manualAdj('${team.id}', 100)">+</button>
+          <button class="score-adj-btn" style="color:${txt}" onclick="manualAdj('${team.id}', -100)">−</button>
         </div>`;
       sb.appendChild(card);
+    });
+  }
+
+  // Basic HTML escaping for user-entered team names
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ── Build award rows in all three modals from team config ──────────────────
+  function buildAwardRows() {
+    const rows = [
+      { id: 'award-row',          withClose: 'closeModal'  },
+      { id: 'wof-award-row',      withClose: null          },
+      { id: 'jackpot-award-row',  withClose: null          },
+    ];
+    rows.forEach(({ id, withClose }) => {
+      const row = document.getElementById(id);
+      if (!row) return;
+      row.innerHTML = '';
+
+      const label = document.createElement('div');
+      label.className = 'award-label';
+      label.textContent = 'Award Points To:';
+      row.appendChild(label);
+
+      teams.forEach(team => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-team';
+        btn.style.background = team.color;
+        btn.style.color = textColorFor(team.color);
+        btn.style.boxShadow = `0 3px 12px ${team.color}66`;
+        btn.textContent = team.name;
+        btn.addEventListener('click', () => awardPoints(team.id));
+        row.appendChild(btn);
+      });
+
+      if (withClose) {
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'btn btn-close';
+        closeBtn.textContent = 'Close';
+        closeBtn.addEventListener('click', () => window[withClose]());
+        row.appendChild(closeBtn);
+      }
     });
   }
 
@@ -2189,13 +2129,121 @@
     badge.textContent = MODE_LABELS[mode].badge;
     badge.className = `mode-badge ${mode}`;
 
-    // Hide selector
+    // Hide mode selector, show team count selector
     document.getElementById('mode-overlay').classList.remove('active');
+    document.getElementById('count-overlay').classList.add('active');
+  }
 
-    // Save mode, then init board
+  // ── Team Setup ─────────────────────────────────────────────────────────────
+  let pendingTeamCount = 0;
+  let pendingConfigs   = []; // [{ name, color }]
+
+  function selectTeamCount(n) {
+    pendingTeamCount = n;
+    pendingConfigs = Array.from({ length: n }, (_, i) => ({
+      name: '',
+      color: null,
+    }));
+
+    document.getElementById('count-overlay').classList.remove('active');
+    buildTeamConfigUI();
+    document.getElementById('team-overlay').classList.add('active');
+  }
+
+  function buildTeamConfigUI() {
+    const list = document.getElementById('team-config-list');
+    list.innerHTML = '';
+
+    pendingConfigs.forEach((cfg, i) => {
+      const row = document.createElement('div');
+      row.className = 'team-config-row';
+
+      const num = document.createElement('div');
+      num.className = 'team-config-num';
+      num.textContent = `Team ${i + 1}`;
+      row.appendChild(num);
+
+      const input = document.createElement('input');
+      input.className = 'team-name-input';
+      input.type = 'text';
+      input.maxLength = 24;
+      input.placeholder = `Team ${i + 1} name`;
+      input.value = cfg.name;
+      input.addEventListener('input', () => {
+        cfg.name = input.value;
+        validateSetup();
+      });
+      row.appendChild(input);
+
+      const swatches = document.createElement('div');
+      swatches.className = 'color-swatches';
+      TEAM_COLORS.forEach(color => {
+        const sw = document.createElement('button');
+        sw.className = 'color-swatch';
+        sw.style.background = color.hex;
+        sw.title = color.name;
+        sw.dataset.hex = color.hex;
+        sw.dataset.teamIdx = i;
+        sw.addEventListener('click', () => pickColor(i, color.hex));
+        swatches.appendChild(sw);
+      });
+      row.appendChild(swatches);
+
+      list.appendChild(row);
+    });
+
+    refreshSwatches();
+    validateSetup();
+  }
+
+  function pickColor(teamIdx, hex) {
+    // Don't allow picking a color another team has
+    const takenByOther = pendingConfigs.some((c, i) => i !== teamIdx && c.color === hex);
+    if (takenByOther) return;
+    pendingConfigs[teamIdx].color = hex;
+    refreshSwatches();
+    validateSetup();
+  }
+
+  function refreshSwatches() {
+    document.querySelectorAll('.color-swatch').forEach(sw => {
+      const teamIdx = +sw.dataset.teamIdx;
+      const hex = sw.dataset.hex;
+      const isMine = pendingConfigs[teamIdx].color === hex;
+      const takenByOther = pendingConfigs.some((c, i) => i !== teamIdx && c.color === hex);
+      sw.classList.toggle('selected', isMine);
+      sw.classList.toggle('taken', takenByOther && !isMine);
+    });
+  }
+
+  function validateSetup() {
+    const allNamed   = pendingConfigs.every(c => c.name.trim().length > 0);
+    const allColored = pendingConfigs.every(c => c.color);
+    const btn = document.getElementById('setup-start-btn');
+    const err = document.getElementById('setup-error');
+    btn.disabled = !(allNamed && allColored);
+    if (!allNamed && !allColored)      err.textContent = '';
+    else if (!allNamed)                err.textContent = 'Every team needs a name.';
+    else if (!allColored)              err.textContent = 'Every team needs a color.';
+    else                               err.textContent = '';
+  }
+
+  function startGame() {
+    teams = pendingConfigs.map((cfg, i) => ({
+      id: `team-${i}`,
+      name: cfg.name.trim(),
+      color: cfg.color,
+      score: 0,
+    }));
+
+    usedCards.clear(); // fresh board for a fresh game
+
+    document.getElementById('team-overlay').classList.remove('active');
+
     saveState();
     buildBoard();
     buildScoreboard();
+    buildAwardRows();
   }
 
   function showModeSelector() {
@@ -2353,14 +2401,15 @@
   }
 
   // ── Init ──────────────────────────────────────────────────────────────────
-  const hadSavedMode = loadState();
-  if (hadSavedMode) {
-    // Mode was saved — go straight to the board
+  const hadSavedGame = loadState();
+  if (hadSavedGame) {
+    // Mode + teams were saved — go straight to the board
     document.getElementById('mode-overlay').classList.remove('active');
     buildBoard();
     buildScoreboard();
+    buildAwardRows();
   }
-  // If no saved mode, mode-overlay stays active (already .active in HTML)
+  // If no saved game, mode-overlay stays active (already .active in HTML)
 </script>
 
 <!-- ── Jackalope Jackpot Modal ── -->
@@ -2400,57 +2449,7 @@
   </div>
   <!-- Award row -->
   <div class="jackpot-award-row" id="jackpot-award-row">
-    <div class="award-label">Award Points To:</div>
-    <button class="btn-team champy"      onclick="awardPoints('champy')"><img src="assets/Cryptid_Crest_Crest_Champy_Blue.png" alt="Champy" /> Champy</button>
-    <button class="btn-team sasquatch"   onclick="awardPoints('sasquatch')"><img src="assets/Cryptid_Crest_Crest_Sasquatch_Green.png" alt="Sasquatch" /> Sasquatch</button>
-    <button class="btn-team thunderbird" onclick="awardPoints('thunderbird')"><img src="assets/Cryptid_Crest_Crest_Thunderbird_Red.png" alt="Thunderbird" /> Thunderbird</button>
-    <button class="btn-team jackalope"   onclick="awardPoints('jackalope')"><img src="assets/Cryptid_Crest_Crest_Jackalope_Yellow.png" alt="Jackalope" /> Jackalope</button>
-  </div>
-</div>
-
-
-<!-- ── Jackalope Jackpot Modal ── -->
-<div class="jackpot-overlay" id="jackpot-overlay">
-  <div class="jackpot-card">
-    <div class="jackpot-header">
-      <div class="jackpot-tag" id="jackpot-category">Category</div>
-      <div class="jackpot-points" id="jackpot-points">$400</div>
-    </div>
-    <div class="jackpot-question">What is Dallas College's mission?</div>
-    <div class="jackpot-body">
-      <!-- Left: Jackalope canvas -->
-      <div class="jackpot-canvas" id="jackpot-canvas">
-        <img class="jackpot-layer" id="jl-1" src="assets/1-tail.png"        alt="tail" />
-        <img class="jackpot-layer" id="jl-2" src="assets/2-feet.png"        alt="feet" />
-        <img class="jackpot-layer" id="jl-3" src="assets/3-haunches.png"    alt="haunches" />
-        <img class="jackpot-layer" id="jl-4" src="assets/4-front-arm.png"   alt="front arm" />
-        <img class="jackpot-layer" id="jl-5" src="assets/5-behind-arm.png"  alt="behind arm" />
-        <img class="jackpot-layer" id="jl-6" src="assets/6-head.png"        alt="head" />
-        <img class="jackpot-layer" id="jl-7" src="assets/7-ear.png"         alt="ear" />
-        <img class="jackpot-layer" id="jl-8" src="assets/8-right-antler.png" alt="right antler" />
-        <img class="jackpot-layer" id="jl-9" src="assets/9-left-antler.png"  alt="left antler" />
-      </div>
-      <!-- Right: phrase + alphabet + actions -->
-      <div class="jackpot-right">
-        <div class="jackpot-phrase" id="jackpot-phrase"></div>
-        <div class="jackpot-solve-prompt" id="jackpot-solve-prompt">
-          The Jackalope stole your letters! Time to solve!
-        </div>
-        <div class="jackpot-alphabet" id="jackpot-alphabet"></div>
-        <div class="jackpot-actions">
-          <button class="btn-jackpot-reveal" onclick="jackpotRevealAll()">Reveal Answer</button>
-          <button class="btn-jackpot-close"  onclick="closeJackpot()">Close (No Award)</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- Award row -->
-  <div class="jackpot-award-row" id="jackpot-award-row">
-    <div class="award-label">Award Points To:</div>
-    <button class="btn-team champy"      onclick="awardPoints('champy')"><img src="assets/Cryptid_Crest_Crest_Champy_Blue.png" alt="Champy" /> Champy</button>
-    <button class="btn-team sasquatch"   onclick="awardPoints('sasquatch')"><img src="assets/Cryptid_Crest_Crest_Sasquatch_Green.png" alt="Sasquatch" /> Sasquatch</button>
-    <button class="btn-team thunderbird" onclick="awardPoints('thunderbird')"><img src="assets/Cryptid_Crest_Crest_Thunderbird_Red.png" alt="Thunderbird" /> Thunderbird</button>
-    <button class="btn-team jackalope"   onclick="awardPoints('jackalope')"><img src="assets/Cryptid_Crest_Crest_Jackalope_Yellow.png" alt="Jackalope" /> Jackalope</button>
+    <!-- Populated dynamically from team config -->
   </div>
 </div>
 
