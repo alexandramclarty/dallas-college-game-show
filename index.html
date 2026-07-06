@@ -636,7 +636,6 @@
       40%  { transform: scale(1.06); }
       100% { transform: scale(1); }
     }
-    .score-swatch { width: 14px; align-self: stretch; border-radius: 4px; flex-shrink: 0; background: rgba(0,0,0,0.25); }
     .score-info { flex: 1; }
     .score-team-name { font-size: 0.72rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.9); line-height: 1; margin-bottom: 0.15rem; }
 
@@ -1712,7 +1711,6 @@
       card.id = `score-card-${team.id}`;
       card.style.background = team.color;
       card.innerHTML = `
-        <div class="score-swatch"></div>
         <div class="score-info">
           <div class="score-team-name" style="color:${txt === '#ffffff' ? 'rgba(255,255,255,0.9)' : 'rgba(0,25,80,0.9)'}">${escapeHtml(team.name)}</div>
           <div class="score-points" id="score-${team.id}" style="color:${txt}">${team.score}</div>
