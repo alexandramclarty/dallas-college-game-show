@@ -37,7 +37,7 @@
     /* Root font scales with viewport: ~15px at 720p, ~20px at 1080p, ~24px at 1440p.
        All rem-based sizes below scale proportionally, so no browser zoom needed. */
     html {
-      font-size: clamp(14px, 0.625vw + 8px, 26px);
+      font-size: clamp(15px, 1.1vw + 5px, 34px);
     }
     html, body {
       height: 100%;
@@ -124,7 +124,7 @@
       border-radius: 6px;
       padding: 0.7rem 0.5rem;
       text-align: center;
-      font-size: 0.78rem;
+      font-size: 1.2rem;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -133,7 +133,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      line-height: 1.2;
+      line-height: 1.4;
     }
     .card {
       background: var(--panel-grad);
@@ -256,7 +256,7 @@
       flex-shrink: 0;
     }
     .face-body {
-      font-size: 1.3rem;
+      font-size: 1.5rem;
       font-weight: 700;
       color: var(--white);
       line-height: 1.5;
@@ -320,7 +320,7 @@
       font-style: italic;
     }
     .back-answer-text {
-      font-size: 1.4rem;
+      font-size: 2rem;
       font-weight: 800;
       color: var(--white);
       line-height: 1.4;
@@ -630,7 +630,7 @@
       gap: 10px;
       position: relative;
       overflow: hidden;
-      transition: box-shadow 0.3s;
+      transition: box-shadow 0.3s, transform 0.3s;
     }
     .score-card::before {
       content: '';
@@ -1310,6 +1310,25 @@
       transition: border-color 0.15s;
     }
     .team-name-input:focus { border-color: var(--bright-blue); }
+    .first-team-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      cursor: pointer;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .first-team-label input[type="radio"] {
+      accent-color: var(--bright-blue);
+      width: 1rem;
+      height: 1rem;
+      cursor: pointer;
+    }
     .team-name-input::placeholder { color: rgba(255,255,255,0.3); }
 
     .color-swatches {
@@ -1522,8 +1541,8 @@
       "Meet the Class": [
         { q: "More than half of Dallas College students identify with this ethnic group.", a: "Hispanic" },
         { q: "If you picture a \"typical college student\" as someone living on campus and going to school full-time, this is roughly the percent of your Dallas College students that actually describes.", a: "0%" },
-        { q: "Roughly 3 out of 4 Dallas College students carry this kind of course load, meaning most of your students have a lot going on outside your classroom.", a: "Part-time" },
-        { q: "27% of Dallas College students are under the age of 18. What program brings many of them here?", a: "Dual Credit" },
+        { q: "Roughly this percentage of Dallas College students are still in high school and are taking classes through a Dual Credit program.", a: "30%" },
+        { q: "This percentage of Dallas College students are enrolled part-time. Your students will have a lot going on outside of the classroom!", a: "75%" },
         { q: "Roughly this percentage of our students are food insecure, making campus resources like the food pantry especially valuable.", a: "50%" },
       ],
       "Not Just an Org Chart": [
@@ -1535,10 +1554,11 @@
       ],
       "Your Mission, Should You Choose to Accept It": [
         { q: "Students usually aren't able to earn this type of degree from a community college, but Dallas College recently became one of only a handful of community colleges in the country to offer it.", a: "A bachelor's degree" },
-        { q: "One of Dallas College's strategic priorities is \"to create a seamless, supportive experience for students to succeed from enrollment through graduation and career placement,\" summarized in these two alliterative words.", a: "Student Success" },
+        // TODO: add qImg when the strategic-priorities question graphic is ready
+        { q: "Which strategic priority is missing? Hint: It's two alliterative words.", a: "Student Success", aImg: "assets/strategic-priorities.png" },
         { q: "The purpose of Dallas College is to ensure Dallas County is ___, _______ and ________ ________ for current and future generations.",
           wof: true,
-          wofContext: "The purpose of Dallas College is to ensure Dallas County is ___ , ___ and ___+___ for current and future generations.",
+          wofContext: "The purpose of Dallas College is to ensure Dallas County is | ___ , ___ and ___+___ for current and future generations.",
           wofPhrase: "vibrant growing economically viable",
           a: "vibrant, growing, economically viable" },
         { q: "What are Dallas College's values?",
@@ -1570,8 +1590,8 @@
       "Meet the Class": [
         { q: "More than half of Dallas College students identify with this ethnic group.", choices: ["Asian", "Hispanic", "Pacific Islander", "Black"], a: "Hispanic" },
         { q: "If you picture a \"typical college student\" as someone living on campus and going to school full-time, this is roughly the percent of your Dallas College students that actually describes.", choices: ["0%", "25%", "50%", "75%"], a: "0%" },
-        { q: "Roughly 3 out of 4 Dallas College students are enrolled this way, meaning most of your students have a lot going on outside your classroom.", choices: ["Part-time", "Dual Credit", "Continuing Education", "Early College High School"], a: "Part-time" },
-        { q: "27% of Dallas College students are under the age of 18. What program brings many of them here?", a: "Dual Credit" },
+        { q: "Roughly this percentage of Dallas College students are still in high school and are taking classes through a Dual Credit program.", choices: ["25%", "30%", "35%", "40%"], a: "30%" },
+        { q: "This percentage of Dallas College students are enrolled part-time. Your students will have a lot going on outside of the classroom!", choices: ["50%", "66%", "75%", "90%"], a: "75%" },
         { q: "Roughly this percentage of our students are food insecure, making campus resources like the food pantry especially valuable.", choices: ["5%", "15%", "25%", "50%"], a: "50%" },
       ],
       "Not Just an Org Chart": [
@@ -1583,10 +1603,11 @@
       ],
       "Your Mission, Should You Choose to Accept It": [
         { q: "Students usually aren't able to earn this type of degree from a community college, but Dallas College recently became one of only a handful of community colleges in the country to offer it.", choices: ["Associate degree", "Bachelor's degree", "Master's degree", "Doctoral degree"], a: "A bachelor's degree" },
-        { q: "One of Dallas College's strategic priorities is \"to create a seamless, supportive experience for students to succeed from enrollment through graduation and career placement,\" summarized in these alliterative words.", choices: ["Student Success", "Student Support", "Academic Achievement", "Classroom to Career"], a: "Student Success" },
+        // TODO: add qImg when the strategic-priorities question graphic is ready
+        { q: "Which strategic priority is missing? Hint: It's two alliterative words.", choices: ["Student Success", "Student Support", "Academic Achievement", "Classroom to Career"], a: "Student Success", aImg: "assets/strategic-priorities.png" },
         { q: "The purpose of Dallas College is to ensure Dallas County is ___, _______ and ________ ________ for current and future generations.",
           wof: true,
-          wofContext: "The purpose of Dallas College is to ensure Dallas County is ___ , ___ and ___+___ for current and future generations.",
+          wofContext: "The purpose of Dallas College is to ensure Dallas County is | ___ , ___ and ___+___ for current and future generations.",
           wofPhrase: "vibrant growing economically viable",
           a: "vibrant, growing, economically viable" },
         { q: "What are Dallas College's values?",
@@ -1641,6 +1662,7 @@
       mode: currentMode,
       teams: teams.map(t => ({ id: t.id, name: t.name, color: t.color, score: t.score })),
       usedCards: [...usedCards],
+      turnIdx: turnIdx,
     };
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
   }
@@ -1662,6 +1684,10 @@
       if (state.teams && state.teams.length) {
         teams = state.teams.map(t => ({ ...t }));
       }
+      // Restore turn order position
+      if (typeof state.turnIdx === 'number') {
+        turnIdx = state.turnIdx;
+      }
       // Restore used cards
       state.usedCards.forEach(key => usedCards.add(key));
       // Resumable only if we have both a mode and a team config
@@ -1674,6 +1700,7 @@
     try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
     teams = [];
     usedCards.clear();
+    turnIdx = 0;
     currentMode = null;
     questions = questionBank.hard; // fallback until mode re-selected
     document.getElementById('scoreboard').innerHTML = '';
@@ -1785,6 +1812,10 @@
     if (usedCards.has(key)) return;
     const q = questions[cat][rowIdx];
     currentCard = { cat, rowIdx, key, points: pointValues[rowIdx] };
+
+    // Card selected — the turn passes to the next team in order
+    advanceTurn();
+    saveState();
 
     if (q.jackpot) {
       openJackpot(q, cat, rowIdx);
@@ -1976,6 +2007,14 @@
     const tokens = context.split(/(\s+)/);
     tokens.forEach(token => {
       if (!token || /^\s+$/.test(token)) return; // skip whitespace tokens
+      if (token === '|') {
+        // Forced line break — pushes following words to a new row
+        const br = document.createElement('div');
+        br.style.flexBasis = '100%';
+        br.style.height = '0';
+        container.appendChild(br);
+        return;
+      }
       if (token === '___') {
         // Replace with tile word
         if (guessIdx < guessWords.length) {
@@ -2154,15 +2193,20 @@
   }
 
   // ── Team Setup ─────────────────────────────────────────────────────────────
+  const PLACEHOLDER_TEAMS = ["Yeti", "Goatman", "Wendigo", "Jersey Devil", "Mothman", "Nessie"];
+
   let pendingTeamCount = 0;
   let pendingConfigs   = []; // [{ name, color }]
+  let pendingFirstIdx  = 0;  // which team goes first
+  let turnIdx          = 0;  // whose turn it is during the game
 
   function selectTeamCount(n) {
     pendingTeamCount = n;
     pendingConfigs = Array.from({ length: n }, (_, i) => ({
-      name: '',
-      color: null,
+      name: PLACEHOLDER_TEAMS[i],
+      color: TEAM_COLORS[i].hex,
     }));
+    pendingFirstIdx = 0;
 
     document.getElementById('count-overlay').classList.remove('active');
     buildTeamConfigUI();
@@ -2181,6 +2225,18 @@
       num.className = 'team-config-num';
       num.textContent = `Team ${i + 1}`;
       row.appendChild(num);
+
+      // "Goes first" radio
+      const firstWrap = document.createElement('label');
+      firstWrap.className = 'first-team-label';
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'first-team';
+      radio.checked = (i === pendingFirstIdx);
+      radio.addEventListener('change', () => { pendingFirstIdx = i; });
+      firstWrap.appendChild(radio);
+      firstWrap.appendChild(document.createTextNode(' Goes first'));
+      row.appendChild(firstWrap);
 
       const input = document.createElement('input');
       input.className = 'team-name-input';
@@ -2256,6 +2312,7 @@
     }));
 
     usedCards.clear(); // fresh board for a fresh game
+    turnIdx = pendingFirstIdx;
 
     document.getElementById('team-overlay').classList.remove('active');
 
@@ -2263,6 +2320,28 @@
     buildBoard();
     buildScoreboard();
     buildAwardRows();
+    updateTurnIndicator();
+  }
+
+  // ── Turn indicator: highlight the team whose turn it is to pick ────────────
+  function updateTurnIndicator() {
+    teams.forEach((team, i) => {
+      const card = document.getElementById(`score-card-${team.id}`);
+      if (!card) return;
+      if (i === turnIdx) {
+        card.style.boxShadow = `0 0 0 3px ${team.color}, 0 0 30px ${team.color}AA, inset 0 1px 0 rgba(255,255,255,0.05)`;
+        card.style.transform = 'scale(1.04)';
+      } else {
+        card.style.boxShadow = `0 0 16px ${team.color}55, inset 0 1px 0 rgba(255,255,255,0.05)`;
+        card.style.transform = '';
+      }
+    });
+  }
+
+  function advanceTurn() {
+    if (!teams.length) return;
+    turnIdx = (turnIdx + 1) % teams.length;
+    updateTurnIndicator();
   }
 
   function showModeSelector() {
@@ -2427,6 +2506,7 @@
     buildBoard();
     buildScoreboard();
     buildAwardRows();
+    updateTurnIndicator();
   }
   // If no saved game, mode-overlay stays active (already .active in HTML)
 </script>
