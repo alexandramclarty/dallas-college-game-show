@@ -124,7 +124,7 @@
       border-radius: 6px;
       padding: 0.7rem 0.5rem;
       text-align: center;
-      font-size: 1.2rem;
+      font-size: 1rem;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -420,7 +420,7 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      padding: 0.6rem 0.9rem;
+      padding: 0.9rem;
       font-size: 0.9rem;
       border-radius: 6px;
       font-weight: 700;
@@ -624,6 +624,7 @@
     }
     .score-card {
       border-radius: 10px;
+      margin: 0.55rem;
       padding: 0.6rem 0.8rem;
       display: flex;
       align-items: center;
@@ -2353,7 +2354,7 @@
       const card = document.getElementById(`score-card-${team.id}`);
       if (!card) return;
       if (i === turnIdx) {
-        card.style.boxShadow = `0 0 0 3px ${team.color}, 0 0 30px ${team.color}AA, inset 0 1px 0 rgba(255,255,255,0.05)`;
+        card.style.boxShadow = `0 0 30px ${team.color}, inset 0 1px 0 rgba(255,255,255,0.05)`;
         card.style.transform = 'scale(1.04)';
       } else {
         card.style.boxShadow = `0 0 16px ${team.color}55, inset 0 1px 0 rgba(255,255,255,0.05)`;
