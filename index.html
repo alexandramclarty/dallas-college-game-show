@@ -199,9 +199,9 @@
     .flip-scene {
       width: 100%;
       max-width: min(52rem, 92vw);
-      height: 52vh;
+      height: 64vh;
       min-height: 19rem;
-      max-height: 34rem;
+      max-height: 46rem;
       perspective: 1200px;
     }
     .flip-card {
@@ -1106,12 +1106,6 @@
     }
     .mode-card:active { transform: scale(0.98); }
 
-    .mode-card-crest {
-      width: 6rem;
-      height: 6rem;
-      object-fit: contain;
-      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
-    }
 
     .mode-card-badge {
       font-size: 0.65rem;
@@ -1400,14 +1394,12 @@
     </div>
     <div class="mode-cards">
       <div class="mode-card easy" onclick="selectMode('easy')">
-        <img class="mode-card-crest" src="assets/Cryptid_Crest_Crest_Champy_Blue.png" alt="Champy" />
         <div class="mode-card-badge">First Sighting</div>
         <div class="mode-card-title">New to<br>Dallas College</div>
         <div class="mode-card-desc">Friendlier phrasing and more multiple choice options. Great for brand-new faculty.</div>
         <button class="mode-card-btn">Start — First Sighting</button>
       </div>
       <div class="mode-card hard" onclick="selectMode('hard')">
-        <img class="mode-card-crest" src="assets/Cryptid_Crest_Crest_Jackalope_Yellow.png" alt="Jackalope" />
         <div class="mode-card-badge">True Believer</div>
         <div class="mode-card-title">Dallas College<br>Veteran</div>
         <div class="mode-card-desc">Full questions, fewer hints. For faculty who've been around the block a few times.</div>
@@ -2191,9 +2183,17 @@
     badge.textContent = MODE_LABELS[mode].badge;
     badge.className = `mode-badge ${mode}`;
 
-    // Hide mode selector, show team count selector
     document.getElementById('mode-overlay').classList.remove('active');
-    document.getElementById('count-overlay').classList.add('active');
+
+    if (teams.length) {
+      // Game in progress — hot-swap the question set, keep teams, scores,
+      // used cards, and turn order intact. Board rebuild preserves used state.
+      buildBoard();
+      saveState();
+    } else {
+      // Initial setup — continue to team count selection
+      document.getElementById('count-overlay').classList.add('active');
+    }
   }
 
   // ── Team Setup ─────────────────────────────────────────────────────────────
