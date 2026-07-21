@@ -261,11 +261,23 @@
       overflow-y: auto; /* scroll instead of clipping when content overflows */
       min-height: 0;
     }
-    /* Front: question text with optional image stacked below */
+    /* Front: question text; with an image, text sits left and image right */
     .flip-front .face-body {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 0.6rem;
+    }
+    .flip-front .face-body.has-qimg {
+      flex-direction: row;
+      gap: 1.2rem;
+      align-items: flex-start;
+    }
+    .front-qcol {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      flex: 1;
+      min-width: 0;
     }
     .flip-front .face-body img {
       max-width: 100%;
@@ -273,6 +285,10 @@
       border-radius: 8px;
       object-fit: contain;
       display: block;
+    }
+    .flip-front .face-body.has-qimg img {
+      max-width: 42%;
+      align-self: flex-start;
     }
     /* Back: image left, question + answer right */
     .flip-back .face-body {
@@ -1026,6 +1042,39 @@
     }
 
     /* ════════════════════════════════════════
+       LAUNCH SCREEN
+    ════════════════════════════════════════ */
+    .launch-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 400;
+      background: url('assets/game-show-launch.png') center / cover no-repeat, var(--stage-black);
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 9vh;
+    }
+    .launch-overlay.active { display: flex; }
+
+    .launch-start-btn {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: var(--dc-red);
+      color: var(--white);
+      border: none;
+      border-radius: 12px;
+      padding: 1.1rem 3.4rem;
+      cursor: pointer;
+      box-shadow: 0 8px 32px rgba(229,38,38,0.55), 0 0 60px rgba(229,38,38,0.3);
+      transition: transform 0.15s, filter 0.15s;
+    }
+    .launch-start-btn:hover { transform: translateY(-3px); filter: brightness(1.12); }
+    .launch-start-btn:active { transform: scale(0.97); }
+
+    /* ════════════════════════════════════════
        MODE SELECTOR
     ════════════════════════════════════════ */
     .mode-overlay {
@@ -1383,6 +1432,11 @@
 <body>
 
 <div class="game-wrapper">
+  <!-- ── Launch Screen ── -->
+  <div class="launch-overlay active" id="launch-overlay">
+    <button class="launch-start-btn" onclick="dismissLaunch()">Start Game</button>
+  </div>
+
   <!-- ── Mode Selector Overlay ── -->
   <div class="mode-overlay active" id="mode-overlay">
     <div class="mode-header">
@@ -1576,7 +1630,7 @@
       "Know Your Campus Cryptids": [
         { q: "The El Centro campus mascot is this bird — fitting, since they're often spotted at White Rock Lake.", choices: ["Eagle", "Pelican", "Falcon", "Duck"], a: "Eagle", aImg: "assets/el-centro-eagles.webp" },
         { q: "Cedar Valley campus is represented by a bird-based mascot, though this team name sounds more like a nod to our region's dominant weather.", choices: ["The Thunderstorms", "The Suns", "The Storms", "The Scorchers"], a: "The Suns", aImg: "assets/cv-suns.jpg" },
-        { q: "This stormy mascot calls Richland campus home — and yes, these birds actually swim on the campus's lake.", choices: ["Lightning Loons", "Thunderducks", "Hail Herons", "Gale"], a: "Thunderducks", aImg: "assets/richland-thunderducks.jpg" },
+        { q: "This stormy mascot calls Richland campus home — and yes, these birds actually swim on the campus's lake.", choices: ["Lightning Loons", "Thunderducks", "Hail Herons", "Gale Geese"], a: "Thunderducks", aImg: "assets/richland-thunderducks.jpg" },
         { q: "Eastfield campus's mascot changed from a harvester (the human kind) to this insect in 2017.", choices: ["Spider", "Ant", "Cicada", "Bee"], a: "Harvester Bee", aImg: "assets/eastfield-bees.jpg" },
         { q: "This mascot represents the North Lake campus, which has a large bronze horse statue dedicated to its mascot.", choices: ["Broncos", "Blazers", "Stallions", "Colts"], a: "Blazers", aImg: "assets/north-lake-blazers.png" },
       ],
@@ -1596,8 +1650,7 @@
       ],
       "Your Mission, Should You Choose to Accept It": [
         { q: "Students usually aren't able to earn this type of degree from a community college, but Dallas College recently became one of only a handful of community colleges in the country to offer it.", choices: ["Associate degree", "Bachelor's degree", "Master's degree", "Doctoral degree"], a: "A bachelor's degree" },
-        // TODO: add qImg when the strategic-priorities question graphic is ready
-        { q: "Which strategic priority is missing? Hint: It's two alliterative words.", choices: ["Student Success", "Student Support", "Academic Achievement", "Classroom to Career"], a: "Student Success", aImg: "assets/strategic-priorities.png" },
+        { q: "Which strategic priority is missing? Hint: It's two alliterative words.", qImg: "assets/strategic-priorities-easy.png", choices: ["Student Success", "Student Support", "Academic Achievement", "Classroom to Career"], a: "Student Success", aImg: "assets/strategic-priorities.png" },
         { q: "The purpose of Dallas College is to ensure Dallas County is ___, _______ and ________ ________ for current and future generations.",
           wof: true,
           wofContext: "The purpose of Dallas College is to ensure Dallas County is | ___ , ___ and ___+___ for current and future generations.",
@@ -1702,6 +1755,7 @@
     document.getElementById('count-overlay').classList.remove('active');
     document.getElementById('team-overlay').classList.remove('active');
     showModeSelector();
+    document.getElementById('launch-overlay').classList.add('active');
   }
 
   // ── Build Board ───────────────────────────────────────────────────────────
@@ -1829,17 +1883,18 @@
 
     const frontQ = document.getElementById('front-question');
     frontQ.innerHTML = '';
-    if (q.qImg) {
-      const img = document.createElement('img');
-      img.src = q.qImg; img.alt = 'Question image';
-      frontQ.appendChild(img);
-    }
+    frontQ.classList.toggle('has-qimg', !!q.qImg);
+
+    // Text (and MC options) go into a column; with an image it sits left, image right
+    const textTarget = q.qImg ? document.createElement('div') : frontQ;
+    if (q.qImg) textTarget.className = 'front-qcol';
+
     if (q.q) {
       // Detect multiple choice: options stored in q.choices array
       if (q.choices) {
         const qText = document.createElement('span');
         qText.textContent = q.q;
-        frontQ.appendChild(qText);
+        textTarget.appendChild(qText);
         const ol = document.createElement('ol');
         ol.className = 'mc-list';
         const labels = ['A', 'B', 'C', 'D'];
@@ -1849,12 +1904,19 @@
           li.innerHTML = `<span class="mc-label">${labels[i]}</span>${choice}`;
           ol.appendChild(li);
         });
-        frontQ.appendChild(ol);
+        textTarget.appendChild(ol);
       } else {
         const span = document.createElement('span');
         span.textContent = q.q;
-        frontQ.appendChild(span);
+        textTarget.appendChild(span);
       }
+    }
+
+    if (q.qImg) {
+      frontQ.appendChild(textTarget);
+      const img = document.createElement('img');
+      img.src = q.qImg; img.alt = 'Question image';
+      frontQ.appendChild(img);
     }
 
     // Build back face: image left col + (question repeat + answer) right col
@@ -2360,6 +2422,10 @@
     document.getElementById('mode-overlay').classList.add('active');
   }
 
+  function dismissLaunch() {
+    document.getElementById('launch-overlay').classList.remove('active');
+  }
+
   // ── Jackalope Jackpot ─────────────────────────────────────────────────────
   let jpGuessCount  = 0;
   let jpGuessed     = new Set();
@@ -2514,6 +2580,7 @@
   const hadSavedGame = loadState();
   if (hadSavedGame) {
     // Mode + teams were saved — go straight to the board
+    document.getElementById('launch-overlay').classList.remove('active');
     document.getElementById('mode-overlay').classList.remove('active');
     buildBoard();
     buildScoreboard();
