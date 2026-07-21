@@ -681,6 +681,23 @@
       to   { opacity: 1; transform: scale(1) translateY(0); }
     }
 
+    /* Force landscape presentation on phones/small tablets held in portrait.
+       Browsers can't truly lock orientation outside of fullscreen mode, so we
+       rotate the entire page 90° instead — the user sees a landscape game and
+       naturally turns their device to match. */
+    @media screen and (orientation: portrait) and (max-width: 900px) {
+      body {
+        transform: rotate(-90deg);
+        transform-origin: left top;
+        width: 100vh;
+        height: 100vw;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        overflow-x: hidden;
+      }
+    }
+
     @media (max-width: 700px) {
       .board { gap: 0.3rem; }
       .card { min-height: 3.2rem; }
@@ -1049,7 +1066,8 @@
       position: fixed;
       inset: 0;
       z-index: 400;
-      background: url('assets/game-show-launch.png') center / cover no-repeat, var(--stage-black);
+      /* Anchor right+top: narrow screens crop the left edge, short screens crop the bottom */
+      background: url('assets/game-show-launch.png') right top / cover no-repeat, var(--stage-black);
       align-items: flex-end;
       justify-content: center;
       padding-bottom: 9vh;
@@ -1058,7 +1076,7 @@
 
     .launch-start-btn {
       font-family: 'Montserrat', sans-serif;
-      font-size: 1.3rem;
+      font-size: 1rem;
       font-weight: 900;
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -1066,7 +1084,7 @@
       color: var(--white);
       border: none;
       border-radius: 12px;
-      padding: 1.1rem 3.4rem;
+      padding: 0.66rem 2rem;
       cursor: pointer;
       box-shadow: 0 8px 32px rgba(229,38,38,0.55), 0 0 60px rgba(229,38,38,0.3);
       transition: transform 0.15s, filter 0.15s;
